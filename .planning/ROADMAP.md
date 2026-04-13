@@ -95,11 +95,10 @@ Plans:
   2. Mayor autonomously dispatches all polecats in the convoy without GSD orchestrating individual workers
   3. GSD orchestrator advances on Mayor completion callback — no 30-second polling loop
 
-**Plans**: TBD
+**Plans**: 1 plan
 
 Plans:
-- [ ] 06-01: Research Mayor programmatic interface — convoy dispatch API, callback mechanism, auth
-- [ ] 06-02: Rewrite execute-phase.md dispatch block to convoy handoff + wire Mayor completion callback
+- [ ] 06-01-PLAN.md — Add launch_convoy() + poll_convoy_status() to gastown.sh; rewrite execute-phase.md dispatch (step 2.5) and polling (step 4) for convoy handoff (MAYOR-01, MAYOR-02, MAYOR-03)
 
 #### Phase 7: Witness Integration
 **Goal**: Real-time stall and crash detection via Witness event subscription replaces the 30-second polling loop
