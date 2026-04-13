@@ -2,100 +2,91 @@
 
 ## What This Is
 
-GSD-Town is a deep integration between GSD (planning/verification) and Gas Town (execution/persistence/monitoring). GSD decides what to build; gastown handles how — dispatching polecats, monitoring health, merging code, persisting work state. Install it and `/gsd-execute-phase` delegates to the Mayor for multi-agent parallel execution with crash recovery.
+GSD-Town is a GSD plugin that replaces single-agent execution with multi-agent parallel dispatch via Gas Town. GSD handles planning and verification; gastown handles execution, monitoring, merging, and persistence. Install it alongside GSD and your `/gsd-execute-phase` dispatches polecats instead of Task() agents — each with its own tmux session, worktree, and crash recovery.
+
+Gastown is vendored as a submodule. GSD is a peer dependency (must be installed). As v2 matures, gsd-town becomes increasingly self-sufficient — a natural path to independence if needed, but no rush to get there.
 
 ## Core Value
 
-GSD navigates, gastown drives — each system does what it's best at.
+Multi-agent parallel execution for any GSD project. Polecats do the work; gsd-town ensures they do the right work via gastown's convoy/monitoring/merge infrastructure.
+
+## Architecture
+
+```
+gsd-town (this repo)
+├── Planning    — AI-generated phases, plans, discuss pipeline (inspired by GSD)
+├── Dispatch    — convoy-driven polecat execution (gastown native)
+├── Monitoring  — Witness/Deacon event subscription (gastown native)
+├── Merging     — Refinery merge queue (gastown native)
+├── Persistence — Beads as source of truth (gastown native)
+├── Verification — Goal-backward checking (reimplemented from GSD concepts)
+└── vendor/gastown — gastown fork (submodule, only runtime dependency)
+```
 
 ## Requirements
 
 ### Validated
 
-v1.0 shipped (integration prototype):
-- [x] **FORK-01**: Gastown forked with upstream tracking
-- [x] **FORK-02**: gt done pre-flight checks
-- [x] **FORK-03**: Convoy event poller UUID fix
-- [x] **PKG-01**: npm package with dispatch functions
-- [x] **PKG-02**: GSD skill /gsd-town-setup
-- [x] **PKG-03**: execute-phase.md integration patch
-- [x] **AUTO-01**: Town auto-detection
-- [x] **AUTO-02**: Dependency auto-install
-- [x] **AUTO-03**: Town+rig+crew auto-creation
-- [x] **AUTO-04**: Zero-config dispatch
-- [x] **RESIL-01**: Stall detection (polling)
-- [x] **RESIL-02**: Escalation detection
-- [x] **RESIL-03**: Capacity governor
-- [x] **RESIL-04**: Seance context block
-- [x] **POLISH-01**: README
-- [x] **POLISH-02**: Example project
+v1.0 prototype (GSD plugin era — concepts proven, being reimplemented):
+- [x] Polecat dispatch per plan via gt sling
+- [x] Convoy tracking per phase
+- [x] Bead-based result persistence
+- [x] Stall detection, escalation, capacity governor
+- [x] Auto-setup (town creation, rig registration, dep install)
 
 ### Active
 
-v2.0 — "GSD navigates, gastown drives":
-- [ ] **MAYOR-01**: Mayor receives convoy of beads and orchestrates polecat dispatch (replaces execute-phase.md gt sling calls)
-- [ ] **MAYOR-02**: execute-phase.md hands off to Mayor via `gt convoy dispatch` instead of calling gt sling per plan
-- [ ] **MAYOR-03**: Mayor completion callback signals GSD orchestrator (replaces polling loop)
-- [ ] **WITNESS-01**: Subscribe to Witness events for stall/crash detection (replaces 30s polling)
-- [ ] **WITNESS-02**: Witness-detected failures automatically trigger GSD failed-plan recording
-- [ ] **REFINERY-01**: Polecat branches submit to Refinery merge queue instead of GSD worktree merge
-- [ ] **REFINERY-02**: GSD orchestrator waits for Refinery merge confirmation before verification
-- [ ] **BEADS-01**: Beads become source of truth for work status (STATE.md generated from beads)
-- [ ] **BEADS-02**: Verifier reads results directly from beads (no SUMMARY.md round-trip)
-- [ ] **BEADS-03**: Phase completion derived from convoy completion (all beads closed)
-- [ ] **SEANCE-01**: Polecats auto-query Seance on resume for prior session context
-- [ ] **SEANCE-02**: Failed polecat re-dispatch includes full Seance history
+v2.0 — standalone product:
+- [ ] **CORE-01**: Native project initialization (replace /gsd-new-project)
+- [ ] **CORE-02**: Native phase/plan structure (own format, not .planning/ GSD layout)
+- [ ] **CORE-03**: Native discuss→plan→execute pipeline (no GSD skill dependencies)
+- [ ] **CORE-04**: Convoy-driven dispatch (gt convoy stage --launch, daemon auto-waves)
+- [ ] **CORE-05**: Convoy status polling for completion (replaces per-polecat polling)
+- [ ] **CORE-06**: Witness event subscription for stall/crash detection
+- [ ] **CORE-07**: Refinery merge queue integration (replaces worktree merge)
+- [ ] **CORE-08**: Beads as work state source of truth (replaces STATE.md)
+- [ ] **CORE-09**: Goal-backward verification reading from beads
+- [ ] **CORE-10**: Seance continuity for resumed polecats
+- [ ] **CLI-01**: `gsd-town init` — initialize project with phases
+- [ ] **CLI-02**: `gsd-town plan <phase>` — AI-generate execution plans
+- [ ] **CLI-03**: `gsd-town run <phase>` — dispatch convoy, monitor, verify
+- [ ] **CLI-04**: `gsd-town status` — project progress from beads
+- [ ] **CLI-05**: `gsd-town setup` — install deps, create town, register rig (existing, keep)
 
 ### Out of Scope
 
-- Wasteland federation — defer to v3
-- Modifying GSD core planning pipeline — GSD-Town is a plugin
-- Replacing GSD's verification with gastown's — GSD verifier is superior
-- Mayor as project planner — Mayor dispatches, GSD plans
+- GSD plugin compatibility — we're independent now
+- Wasteland federation — v3
+- GUI/dashboard — CLI-first
+- Custom agent runtimes — gastown handles this
 
 ## Context
 
-- v1.0 is the "backseat driving" integration — GSD calls gt CLI commands to puppet gastown from outside
-- v2.0 inverts the control: GSD hands gastown a convoy and delegates execution entirely
-- The key architectural shift: execute-phase.md stops calling gt sling/polling and instead sends a convoy to the Mayor
-- Mayor already coordinates polecats, manages Witness, feeds Refinery — we just need to use it
-- Beads persist work state in Dolt (SQL DB) — far more durable than STATE.md (markdown file)
-- Refinery does Bors-style bisecting merge queue with CI gating — better than GSD's worktree merge
+- Gastown vendored at vendor/gastown (submodule, laulpogan/gastown fork)
+- GSD's good ideas reimplemented natively: phases, plans, verification, discuss pipeline
+- No patches to external files — gsd-town owns all its code
+- The 18 bash dispatch functions (gastown.sh) carry forward as the execution layer
+- auto-setup.sh carries forward for dependency management
 
 ## Constraints
 
-- **Backward compatible**: v1 CLI-driven dispatch must still work as fallback
-- **Mayor protocol**: Need to understand how to programmatically hand work to the Mayor
-- **Refinery integration**: Need to understand MR bead lifecycle for GSD's merge expectations
+- **Single dependency**: gastown (vendored submodule) is the only runtime dep
+- **No GSD dependency**: must work without GSD installed
 - **Platform**: macOS primary, Linux secondary
+- **Claude Code compatible**: works as a Claude Code project but doesn't require it
 
 ## Key Decisions
 
 | Decision | Rationale | Outcome |
 |----------|-----------|---------|
-| One polecat per plan | Tasks within a plan have sequential deps | ✓ Good |
-| v1: GSD puppets gastown via CLI | Fast to build, proved the concept | ✓ Served its purpose |
-| v2: Mayor as execution orchestrator | Mayor already does this — stop reinventing | -- Pending |
-| v2: Refinery for merges | Bors-style queue > worktree merge | -- Pending |
-| v2: Beads as work state truth | Dolt DB > markdown file for durability | -- Pending |
-| v2: Verifier reads beads directly | Eliminates SUMMARY.md round-trip | -- Pending |
+| Go independent from GSD | Patching external files is fragile; own the full stack | -- Pending |
+| Gastown as submodule | Single vendored dependency, pinned version | ✓ Good |
+| Reimplement GSD concepts natively | Own the planning layer, purpose-built for convoy model | -- Pending |
+| Keep bash dispatch functions | 18 functions proven in v1; wrap in CLI, don't rewrite | -- Pending |
 
 ## Evolution
 
 This document evolves at phase transitions and milestone boundaries.
 
-**After each phase transition:**
-1. Requirements invalidated? -> Move to Out of Scope with reason
-2. Requirements validated? -> Move to Validated with phase reference
-3. New requirements emerged? -> Add to Active
-4. Decisions to log? -> Add to Key Decisions
-5. "What This Is" still accurate? -> Update if drifted
-
-**After each milestone:**
-1. Full review of all sections
-2. Core Value check — still the right priority?
-3. Audit Out of Scope — reasons still valid?
-4. Update Context with current state
-
 ---
-*Last updated: 2026-04-13 after v2.0 milestone start*
+*Last updated: 2026-04-13 after v2.0 independence pivot*
