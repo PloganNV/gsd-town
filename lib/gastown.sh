@@ -425,6 +425,15 @@ GSD_SEANCE_BLOCK
 # The format is designed so a polecat can begin work from notes alone,
 # without reading .planning/ itself.
 #
+# RESUME SCENARIOS — see lib/seance.sh
+#   For full Seance predecessor-context injection on resumed or re-dispatched polecats,
+#   use the three functions in lib/seance.sh BEFORE calling format_plan_notes():
+#     1. get_seance_predecessors(bead_id) — discover predecessor session IDs
+#     2. build_seance_context(bead_id)    — query predecessors, build markdown block
+#     3. inject_seance_into_notes(bead_id, ctx) — write block into bead notes
+#   Then call format_plan_notes() with is_resume="true" (arg $9) so the lightweight
+#   seance_context_block() hint is also embedded in the formatted notes.
+#
 # Args:
 #   $1 — plan file path (e.g., "/Users/laul_pogan/Source/gastown/.planning/phases/02-dispatch-bridge/02-01-PLAN.md")
 #   $2 — phase number (e.g., "02")
