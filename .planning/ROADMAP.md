@@ -46,7 +46,7 @@ Plans:
 
 Plans:
 - [x] 02-01-PLAN.md — npm package scaffold + gastown.sh bundle + gsd-town CLI (PKG-01)
-- [ ] 02-02-PLAN.md — GSD skill /gsd-town-setup + execute-phase.md patch installer (PKG-02, PKG-03)
+- [x] 02-02-PLAN.md — GSD skill /gsd-town-setup + execute-phase.md patch installer (PKG-02, PKG-03)
 
 ### Phase 3: Auto-Setup
 **Goal**: A user can run `/gsd-execute-phase` in a fresh project and gastown is detected, installed, and configured with no manual steps

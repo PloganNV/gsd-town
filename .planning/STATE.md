@@ -2,16 +2,16 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-status: executing
-stopped_at: Completed 02-npm-package/02-01-PLAN.md
-last_updated: "2026-04-13T20:52:29.320Z"
+status: verifying
+stopped_at: Completed 02-npm-package-02-PLAN.md
+last_updated: "2026-04-13T20:55:16.372Z"
 last_activity: 2026-04-13
 progress:
   total_phases: 5
-  completed_phases: 1
+  completed_phases: 2
   total_plans: 4
-  completed_plans: 3
-  percent: 75
+  completed_plans: 4
+  percent: 100
 ---
 
 # Project State
@@ -27,7 +27,7 @@ See: .planning/PROJECT.md (updated 2026-04-13)
 
 Phase: 02 (npm Package) — EXECUTING
 Plan: 2 of 2
-Status: Ready to execute
+Status: Phase complete — ready for verification
 Last activity: 2026-04-13
 
 Progress: [░░░░░░░░░░] 0%
@@ -54,6 +54,7 @@ Progress: [░░░░░░░░░░] 0%
 *Updated after each plan completion*
 | Phase 01-fork-and-critical-fixes P01 | 25 | 2 tasks | 1 files |
 | Phase 02-npm-package P01 | 8 | 2 tasks | 5 files |
+| Phase 02-npm-package P02 | 2 | 2 tasks | 2 files |
 
 ## Accumulated Context
 
@@ -72,6 +73,8 @@ Recent decisions affecting current work:
 - [Phase 02-npm-package]: No main field in package.json — bash functions are the API, not a Node.js module
 - [Phase 02-npm-package]: lib/gastown.sh copied verbatim (cp + diff-verified) rather than symlinked — npm pack works correctly with real files
 - [Phase 02-npm-package]: GASTOWN_SH path anchored to __dirname — no user-controlled input reaches execSync
+- [Phase 02-npm-package]: Idempotency check uses content-level string match for source+gastown.sh — handles pre-existing inline source pattern in execute-phase.md
+- [Phase 02-npm-package]: SKILL_SRC copied via fs.readdirSync loop — all files in skills/gsd-town-setup/ are included automatically
 
 ### Pending Todos
 
@@ -85,6 +88,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-04-13T20:52:29.317Z
-Stopped at: Completed 02-npm-package/02-01-PLAN.md
+Last session: 2026-04-13T20:55:16.368Z
+Stopped at: Completed 02-npm-package-02-PLAN.md
 Resume file: None
