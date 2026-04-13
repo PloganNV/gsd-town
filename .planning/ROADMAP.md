@@ -14,7 +14,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 
 - [ ] **Phase 1: Fork + Critical Fixes** - Fork gastown and apply the two blocking bugs (gt done enforcement, convoy UUID)
 - [ ] **Phase 2: npm Package** - Ship GSD-Town as an installable npm package with skill registration and execute-phase hook
-- [ ] **Phase 3: Auto-Setup** - Zero-config detection, dependency install, and town creation on first use
+- [x] **Phase 3: Auto-Setup** - Zero-config detection, dependency install, and town creation on first use (completed 2026-04-13)
 - [ ] **Phase 4: Resilience** - Stall detection, escalation routing, capacity governance, and session resume
 - [ ] **Phase 5: Polish** - README quickstart, architecture diagram, config reference, and example project
 
@@ -62,7 +62,7 @@ Plans:
 
 Plans:
 - [x] 03-01-PLAN.md — lib/auto-setup.sh: detect_town, check_and_install_deps, bootstrap_town (AUTO-01, AUTO-02, AUTO-03)
-- [ ] 03-02-PLAN.md — bin/gsd-town.js setup/teardown/status + preuninstall cleanup (AUTO-04, AUTO-05)
+- [x] 03-02-PLAN.md — bin/gsd-town.js setup/teardown/status + preuninstall cleanup (AUTO-04, AUTO-05)
 
 ### Phase 4: Resilience
 **Goal**: GSD-Town handles polecat failures, blockages, and capacity limits without human intervention or silent data loss
@@ -94,6 +94,6 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 |-------|----------------|--------|-----------|
 | 1. Fork + Critical Fixes | 0/2 | Not started | - |
 | 2. npm Package | 0/2 | Not started | - |
-| 3. Auto-Setup | 0/2 | Not started | - |
+| 3. Auto-Setup | 2/2 | Complete   | 2026-04-13 |
 | 4. Resilience | 0/TBD | Not started | - |
 | 5. Polish | 0/TBD | Not started | - |

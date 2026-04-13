@@ -22,8 +22,8 @@
 - [x] **AUTO-01**: GSD-Town spins up its own managed town workspace (not user's ~/gt/)
 - [x] **AUTO-02**: Auto-install all gastown dependencies if not present (go, dolt, beads, tmux, gt)
 - [x] **AUTO-03**: Auto-create rig + crew for current project within managed town on first dispatch
-- [ ] **AUTO-04**: Zero-config dispatch — `workflow.use_gastown: auto` bootstraps everything on first use
-- [ ] **AUTO-05**: Town lifecycle management — start daemon on dispatch, stop on idle, clean up on uninstall
+- [x] **AUTO-04**: Zero-config dispatch — `workflow.use_gastown: auto` bootstraps everything on first use
+- [x] **AUTO-05**: Town lifecycle management — start daemon on dispatch, stop on idle, clean up on uninstall
 
 ### Resilience
 
@@ -67,8 +67,8 @@
 | AUTO-01 | Phase 3 | Complete |
 | AUTO-02 | Phase 3 | Complete |
 | AUTO-03 | Phase 3 | Complete |
-| AUTO-04 | Phase 3 | Pending |
-| AUTO-05 | Phase 3 | Pending |
+| AUTO-04 | Phase 3 | Complete |
+| AUTO-05 | Phase 3 | Complete |
 | RESIL-01 | Phase 4 | Pending |
 | RESIL-02 | Phase 4 | Pending |
 | RESIL-03 | Phase 4 | Pending |
