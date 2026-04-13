@@ -12,6 +12,55 @@ const EXECUTE_PHASE = path.join(os.homedir(), '.claude', 'get-shit-done', 'workf
 const GASTOWN_SOURCE_LINE = '  source "${HOME}/.claude/get-shit-done/bin/lib/gastown.sh"';
 const GASTOWN_SH_VAR = 'GASTOWN_SH="${HOME}/.claude/get-shit-done/bin/lib/gastown.sh"';
 
+// ---------------------------------------------------------------------------
+// Uninstall mode — invoked by package.json preuninstall script
+// Reverses postinstall: removes skill dir and reverts execute-phase.md patch.
+// Town data at ~/.gsd-town is preserved (user must run: gsd-town teardown --remove-data).
+// [T-03-08] Both skip cases log reason to stdout — audit trail present.
+// ---------------------------------------------------------------------------
+
+const isUninstall = process.argv.includes('--uninstall');
+
+if (isUninstall) {
+  try {
+    console.log('gsd-town preuninstall:');
+
+    // 1. Remove skill directory
+    if (fs.existsSync(SKILL_DEST)) {
+      fs.rmSync(SKILL_DEST, { recursive: true, force: true });
+      console.log(`  [ok] skill removed: ${SKILL_DEST}`);
+    } else {
+      console.log(`  [skip] skill not found at ${SKILL_DEST}`);
+    }
+
+    // 2. Unpatch execute-phase.md — remove the gastown source line
+    if (fs.existsSync(EXECUTE_PHASE)) {
+      const content = fs.readFileSync(EXECUTE_PHASE, 'utf8');
+      if (content.includes('gastown.sh')) {
+        const lines = content.split('\n');
+        const filtered = lines.filter(l => !l.includes('gastown.sh'));
+        fs.writeFileSync(EXECUTE_PHASE, filtered.join('\n'), 'utf8');
+        console.log('  [ok] execute-phase.md unpatched');
+      } else {
+        console.log('  [skip] execute-phase.md has no gastown.sh reference — already clean');
+      }
+    } else {
+      console.log('  [skip] execute-phase.md not found');
+    }
+
+    console.log('');
+    console.log('gsd-town uninstalled. Town data at ~/.gsd-town is preserved.');
+    console.log('To remove town data: gsd-town teardown --remove-data');
+  } catch (e) {
+    process.stderr.write(`gsd-town preuninstall error: ${e.message}\n`);
+  }
+  process.exit(0);
+}
+
+// ---------------------------------------------------------------------------
+// Install mode — invoked by package.json postinstall script (default path)
+// ---------------------------------------------------------------------------
+
 try {
   console.log('gsd-town postinstall:');
 

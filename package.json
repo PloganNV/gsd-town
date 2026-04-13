@@ -9,7 +9,8 @@
     "gsd-town": "./bin/gsd-town.js"
   },
   "scripts": {
-    "postinstall": "node ./bin/postinstall.js"
+    "postinstall": "node ./bin/postinstall.js",
+    "preuninstall": "node ./bin/postinstall.js --uninstall"
   },
   "files": [
     "bin/",
