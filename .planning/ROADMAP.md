@@ -32,7 +32,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 
 Plans:
 - [x] 01-01-PLAN.md — Fork GitHub + configure remotes + UUID regression test (FORK-01, FORK-03)
-- [ ] 01-02-PLAN.md — gt done pre-flight push/PR enforcement (FORK-02)
+- [x] 01-02-PLAN.md — gt done pre-flight push/PR enforcement (FORK-02)
 
 ### Phase 2: npm Package
 **Goal**: GSD-Town is installable as an npm package that registers a GSD skill and wires execute-phase dispatch
