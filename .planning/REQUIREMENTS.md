@@ -7,9 +7,9 @@
 
 ### Fork and Fixes
 
-- [ ] **FORK-01**: Gastown forked with upstream tracking; critical fixes applied
+- [x] **FORK-01**: Gastown forked with upstream tracking; critical fixes applied
 - [ ] **FORK-02**: `gt done` enforces commit/push/PR pre-flight checks before marking bead complete
-- [ ] **FORK-03**: Convoy event poller scans `events.id` as string (CHAR(36) UUID), not int64
+- [x] **FORK-03**: Convoy event poller scans `events.id` as string (CHAR(36) UUID), not int64
 
 ### Packaging
 
@@ -58,9 +58,9 @@
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| FORK-01 | Phase 1 | Pending |
+| FORK-01 | Phase 1 | Complete |
 | FORK-02 | Phase 1 | Pending |
-| FORK-03 | Phase 1 | Pending |
+| FORK-03 | Phase 1 | Complete |
 | PKG-01 | Phase 2 | Pending |
 | PKG-02 | Phase 2 | Pending |
 | PKG-03 | Phase 2 | Pending |

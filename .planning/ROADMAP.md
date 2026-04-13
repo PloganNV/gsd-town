@@ -31,7 +31,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 **Plans**: 2 plans
 
 Plans:
-- [ ] 01-01-PLAN.md — Fork GitHub + configure remotes + UUID regression test (FORK-01, FORK-03)
+- [x] 01-01-PLAN.md — Fork GitHub + configure remotes + UUID regression test (FORK-01, FORK-03)
 - [ ] 01-02-PLAN.md — gt done pre-flight push/PR enforcement (FORK-02)
 
 ### Phase 2: npm Package
