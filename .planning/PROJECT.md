@@ -2,79 +2,94 @@
 
 ## What This Is
 
-GSD-Town is a portable GSD plugin that adds multi-agent execution to any project via Gas Town. It spins up and manages its own town workspace — no pre-existing gastown installation required. Run `/gsd-execute-phase` and it automatically bootstraps a town, creates a rig for your project, and dispatches polecats (worker agents) instead of single-agent Task() calls. Each polecat gets its own tmux session and git worktree — true process-isolated parallel execution with crash recovery.
+GSD-Town is a deep integration between GSD (planning/verification) and Gas Town (execution/persistence/monitoring). GSD decides what to build; gastown handles how — dispatching polecats, monitoring health, merging code, persisting work state. Install it and `/gsd-execute-phase` delegates to the Mayor for multi-agent parallel execution with crash recovery.
 
 ## Core Value
 
-Any GSD project gets multi-agent parallel execution by running a single command — GSD-Town handles the entire gastown lifecycle (install, town creation, rig setup, dispatch, teardown).
+GSD navigates, gastown drives — each system does what it's best at.
 
 ## Requirements
 
 ### Validated
 
-(None yet — ship to validate)
+v1.0 shipped (integration prototype):
+- [x] **FORK-01**: Gastown forked with upstream tracking
+- [x] **FORK-02**: gt done pre-flight checks
+- [x] **FORK-03**: Convoy event poller UUID fix
+- [x] **PKG-01**: npm package with dispatch functions
+- [x] **PKG-02**: GSD skill /gsd-town-setup
+- [x] **PKG-03**: execute-phase.md integration patch
+- [x] **AUTO-01**: Town auto-detection
+- [x] **AUTO-02**: Dependency auto-install
+- [x] **AUTO-03**: Town+rig+crew auto-creation
+- [x] **AUTO-04**: Zero-config dispatch
+- [x] **RESIL-01**: Stall detection (polling)
+- [x] **RESIL-02**: Escalation detection
+- [x] **RESIL-03**: Capacity governor
+- [x] **RESIL-04**: Seance context block
+- [x] **POLISH-01**: README
+- [x] **POLISH-02**: Example project
 
 ### Active
 
-- [ ] **FORK-01**: Fork gastown with critical bug fixes (gt done enforcement, convoy poller UUID)
-- [ ] **FORK-02**: gt done pre-flight checks — commit/push/PR enforcement before marking bead complete
-- [ ] **FORK-03**: Convoy event poller reads UUID as string, not int64
-- [ ] **PKG-01**: GSD-Town npm package with gastown.sh functions as portable module
-- [ ] **PKG-02**: GSD skill registration — /gsd-town-setup command for any project
-- [ ] **PKG-03**: execute-phase.md integration as installable patch/hook
-- [ ] **AUTO-01**: Auto-detect gastown town (~/gt/ or GT_TOWN_ROOT env)
-- [ ] **AUTO-02**: Auto-install gastown if not present (brew/npm/go install)
-- [ ] **AUTO-03**: Auto-create town + rig + crew for current project on first use
-- [ ] **AUTO-04**: Zero-config dispatch — no manual gt commands needed
-- [ ] **RESIL-01**: Stall detection — Witness monitors polecats, GSD knows when they die
-- [ ] **RESIL-02**: Escalation routing — blocked polecat surfaces to GSD/user
-- [ ] **RESIL-03**: Capacity-governed dispatch via Scheduler (max_polecats config)
-- [ ] **RESIL-04**: Persistent context via Seance — resume interrupted polecat work
-- [ ] **POLISH-01**: README with quickstart, architecture diagram, config reference
-- [ ] **POLISH-02**: Example project showing GSD-Town in action
+v2.0 — "GSD navigates, gastown drives":
+- [ ] **MAYOR-01**: Mayor receives convoy of beads and orchestrates polecat dispatch (replaces execute-phase.md gt sling calls)
+- [ ] **MAYOR-02**: execute-phase.md hands off to Mayor via `gt convoy dispatch` instead of calling gt sling per plan
+- [ ] **MAYOR-03**: Mayor completion callback signals GSD orchestrator (replaces polling loop)
+- [ ] **WITNESS-01**: Subscribe to Witness events for stall/crash detection (replaces 30s polling)
+- [ ] **WITNESS-02**: Witness-detected failures automatically trigger GSD failed-plan recording
+- [ ] **REFINERY-01**: Polecat branches submit to Refinery merge queue instead of GSD worktree merge
+- [ ] **REFINERY-02**: GSD orchestrator waits for Refinery merge confirmation before verification
+- [ ] **BEADS-01**: Beads become source of truth for work status (STATE.md generated from beads)
+- [ ] **BEADS-02**: Verifier reads results directly from beads (no SUMMARY.md round-trip)
+- [ ] **BEADS-03**: Phase completion derived from convoy completion (all beads closed)
+- [ ] **SEANCE-01**: Polecats auto-query Seance on resume for prior session context
+- [ ] **SEANCE-02**: Failed polecat re-dispatch includes full Seance history
 
 ### Out of Scope
 
-- Wasteland federation (cross-town coordination) — too complex for v1
-- Custom gastown runtimes — use what gastown supports
-- GUI/dashboard — CLI-first product
-- Modifying GSD core — GSD-Town is a plugin, not a fork of GSD
+- Wasteland federation — defer to v3
+- Modifying GSD core planning pipeline — GSD-Town is a plugin
+- Replacing GSD's verification with gastown's — GSD verifier is superior
+- Mayor as project planner — Mayor dispatches, GSD plans
 
 ## Context
 
-- Built on top of Gas Town (gastownhall/gastown) — multi-agent workspace manager
-- GSD is Get Shit Done — a Claude Code skill system for project planning and execution
-- The integration was prototyped in /Users/laul_pogan/Source/gastown during v1.0 milestone
-- 13 bash functions in gastown.sh handle detection, dispatch, polling, result feedback
-- execute-phase.md has conditional gastown dispatch wired at step 2.5 and step 4
-- Key insight: one polecat per GSD plan (not per task) — plans have sequential task deps
+- v1.0 is the "backseat driving" integration — GSD calls gt CLI commands to puppet gastown from outside
+- v2.0 inverts the control: GSD hands gastown a convoy and delegates execution entirely
+- The key architectural shift: execute-phase.md stops calling gt sling/polling and instead sends a convoy to the Mayor
+- Mayor already coordinates polecats, manages Witness, feeds Refinery — we just need to use it
+- Beads persist work state in Dolt (SQL DB) — far more durable than STATE.md (markdown file)
+- Refinery does Bors-style bisecting merge queue with CI gating — better than GSD's worktree merge
 
 ## Constraints
 
-- **Platform**: macOS primary, Linux secondary. No Windows yet.
-- **Dependencies**: Go 1.25+, Dolt, beads (bd), tmux, Node.js 18+
-- **GSD compatibility**: Must not break GSD for non-gastown users (capability detection)
-- **Gastown fork**: Minimal divergence from upstream — only critical fixes, PR everything back
+- **Backward compatible**: v1 CLI-driven dispatch must still work as fallback
+- **Mayor protocol**: Need to understand how to programmatically hand work to the Mayor
+- **Refinery integration**: Need to understand MR bead lifecycle for GSD's merge expectations
+- **Platform**: macOS primary, Linux secondary
 
 ## Key Decisions
 
 | Decision | Rationale | Outcome |
 |----------|-----------|---------|
-| Fork gastown for critical fixes | gt done and convoy poller bugs block production use | -- Pending |
-| npm package distribution | GSD users already have Node.js; npm is the natural distribution | -- Pending |
-| Plugin architecture (not GSD fork) | Keeps both projects independent; users opt-in | -- Pending |
-| One polecat per plan | Tasks within a plan have sequential deps; splitting causes merge conflicts | ✓ Good |
+| One polecat per plan | Tasks within a plan have sequential deps | ✓ Good |
+| v1: GSD puppets gastown via CLI | Fast to build, proved the concept | ✓ Served its purpose |
+| v2: Mayor as execution orchestrator | Mayor already does this — stop reinventing | -- Pending |
+| v2: Refinery for merges | Bors-style queue > worktree merge | -- Pending |
+| v2: Beads as work state truth | Dolt DB > markdown file for durability | -- Pending |
+| v2: Verifier reads beads directly | Eliminates SUMMARY.md round-trip | -- Pending |
 
 ## Evolution
 
 This document evolves at phase transitions and milestone boundaries.
 
 **After each phase transition:**
-1. Requirements invalidated? → Move to Out of Scope with reason
-2. Requirements validated? → Move to Validated with phase reference
-3. New requirements emerged? → Add to Active
-4. Decisions to log? → Add to Key Decisions
-5. "What This Is" still accurate? → Update if drifted
+1. Requirements invalidated? -> Move to Out of Scope with reason
+2. Requirements validated? -> Move to Validated with phase reference
+3. New requirements emerged? -> Add to Active
+4. Decisions to log? -> Add to Key Decisions
+5. "What This Is" still accurate? -> Update if drifted
 
 **After each milestone:**
 1. Full review of all sections
@@ -83,4 +98,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-04-13 after initialization*
+*Last updated: 2026-04-13 after v2.0 milestone start*

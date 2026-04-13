@@ -1,86 +1,73 @@
-# Requirements: GSD-Town
+# Requirements: GSD-Town v2.0 — Gastown Drives
 
 **Defined:** 2026-04-13
-**Core Value:** Any GSD project gets multi-agent parallel execution with zero configuration
+**Core Value:** GSD navigates, gastown drives — each system does what it's best at
 
-## v1 Requirements
+## v2.0 Requirements
 
-### Fork and Fixes
+### Mayor Delegation
 
-- [x] **FORK-01**: Gastown forked with upstream tracking; critical fixes applied
-- [ ] **FORK-02**: `gt done` enforces commit/push/PR pre-flight checks before marking bead complete
-- [x] **FORK-03**: Convoy event poller scans `events.id` as string (CHAR(36) UUID), not int64
+- [ ] **MAYOR-01**: Mayor receives a convoy of beads and dispatches polecats autonomously
+- [ ] **MAYOR-02**: execute-phase.md delegates to Mayor via convoy handoff (replaces per-plan gt sling)
+- [ ] **MAYOR-03**: Mayor signals GSD orchestrator on convoy completion (replaces polling loop)
 
-### Packaging
+### Witness Integration
 
-- [x] **PKG-01**: GSD-Town npm package exports all dispatch functions as importable module
-- [x] **PKG-02**: GSD skill `/gsd-town-setup` configures any project for gastown dispatch
-- [x] **PKG-03**: execute-phase.md gastown dispatch installable as hook or patch
+- [ ] **WITNESS-01**: GSD subscribes to Witness events for real-time stall/crash detection
+- [ ] **WITNESS-02**: Witness-detected failures auto-record as GSD failed plans
 
-### Auto-Setup
+### Refinery Merging
 
-- [x] **AUTO-01**: GSD-Town spins up its own managed town workspace (not user's ~/gt/)
-- [x] **AUTO-02**: Auto-install all gastown dependencies if not present (go, dolt, beads, tmux, gt)
-- [x] **AUTO-03**: Auto-create rig + crew for current project within managed town on first dispatch
-- [x] **AUTO-04**: Zero-config dispatch — `workflow.use_gastown: auto` bootstraps everything on first use
-- [x] **AUTO-05**: Town lifecycle management — start daemon on dispatch, stop on idle, clean up on uninstall
+- [ ] **REFINERY-01**: Polecat branches submit to Refinery merge queue (replaces GSD worktree merge)
+- [ ] **REFINERY-02**: GSD orchestrator waits for Refinery merge confirmation before verification
 
-### Resilience
+### Beads as Truth
 
-- [x] **RESIL-01**: Stall detection — GSD polls Witness status, surfaces dead polecats as failed plans
-- [x] **RESIL-02**: Escalation routing — `gt escalate` from polecat surfaces to GSD verification
-- [x] **RESIL-03**: Capacity-governed dispatch — respects `scheduler.max_polecats` config
-- [x] **RESIL-04**: Seance integration — resumed polecats get prior session context
+- [ ] **BEADS-01**: Beads are source of truth for work status; STATE.md is a generated view
+- [ ] **BEADS-02**: GSD verifier reads polecat results directly from beads (no SUMMARY.md round-trip)
+- [ ] **BEADS-03**: Phase completion derived from convoy status (all beads closed = phase done)
 
-### Polish
+### Seance Continuity
 
-- [ ] **POLISH-01**: README with quickstart, architecture diagram, and config reference
-- [ ] **POLISH-02**: Example project demonstrating GSD-Town end-to-end
+- [ ] **SEANCE-01**: Polecats auto-query Seance on resume for prior session decisions/context
+- [ ] **SEANCE-02**: Failed polecat re-dispatch includes full Seance history from predecessor
 
-## v2 Requirements
+## Future Requirements
 
-### Advanced Features
-
-- **ADV-01**: Multi-rig support — dispatch to different rigs based on plan type
-- **ADV-02**: Convoy progress dashboard in GSD `/gsd-progress` output
-- **ADV-03**: Automatic upstream sync — merge gastown upstream changes into fork
+- **FED-01**: Wasteland federation for cross-machine dispatch
+- **MULTI-01**: Multi-rig dispatch — route plans to specialized rigs by type
+- **DASH-01**: Convoy progress in GSD /gsd-progress output
 
 ## Out of Scope
 
 | Feature | Reason |
 |---------|--------|
-| Wasteland federation | Cross-town coordination too complex for v1 |
-| Windows support | No Windows test environment; macOS/Linux first |
-| GUI/dashboard | CLI-first; gastown has its own dashboard |
-| GSD core modifications | Plugin architecture — GSD stays independent |
+| Replace GSD planning | Mayor dispatches, GSD plans — roles are clear |
+| Replace GSD verification | GSD verifier is goal-backward; gastown has no equivalent |
+| Wasteland federation | v3 — single-town must be solid first |
+| GUI/dashboard | CLI-first; gastown dashboard exists for visual monitoring |
 
 ## Traceability
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| FORK-01 | Phase 1 | Complete |
-| FORK-02 | Phase 1 | Pending |
-| FORK-03 | Phase 1 | Complete |
-| PKG-01 | Phase 2 | Complete |
-| PKG-02 | Phase 2 | Complete |
-| PKG-03 | Phase 2 | Complete |
-| AUTO-01 | Phase 3 | Complete |
-| AUTO-02 | Phase 3 | Complete |
-| AUTO-03 | Phase 3 | Complete |
-| AUTO-04 | Phase 3 | Complete |
-| AUTO-05 | Phase 3 | Complete |
-| RESIL-01 | Phase 4 | Complete |
-| RESIL-02 | Phase 4 | Complete |
-| RESIL-03 | Phase 4 | Complete |
-| RESIL-04 | Phase 4 | Complete |
-| POLISH-01 | Phase 5 | Pending |
-| POLISH-02 | Phase 5 | Pending |
+| MAYOR-01 | Phase 6 | Pending |
+| MAYOR-02 | Phase 6 | Pending |
+| MAYOR-03 | Phase 6 | Pending |
+| WITNESS-01 | Phase 7 | Pending |
+| WITNESS-02 | Phase 7 | Pending |
+| REFINERY-01 | Phase 8 | Pending |
+| REFINERY-02 | Phase 8 | Pending |
+| BEADS-01 | Phase 9 | Pending |
+| BEADS-02 | Phase 9 | Pending |
+| BEADS-03 | Phase 9 | Pending |
+| SEANCE-01 | Phase 10 | Pending |
+| SEANCE-02 | Phase 10 | Pending |
 
 **Coverage:**
-- v1 requirements: 17 total
-- Mapped to phases: 17
+- v2.0 requirements: 12 total
+- Mapped to phases: 12
 - Unmapped: 0
 
 ---
 *Requirements defined: 2026-04-13*
-*Last updated: 2026-04-13 after initial definition*
