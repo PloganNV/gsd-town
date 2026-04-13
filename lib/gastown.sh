@@ -957,14 +957,141 @@ except Exception as e:
   echo "$convoy_id"
 }
 
+# =============================================================================
+# PHASE 07 — WITNESS INTEGRATION (WITNESS-01, WITNESS-02)
+# =============================================================================
+
+# tail_witness_events()
+# Tails ~/gt/.events.jsonl (or <town_root>/.events.jsonl) for Witness-emitted events
+# matching the given pattern. Exits when a matching event is found or timeout is reached.
+#
+# Event types of interest (from gastown/internal/events/events.go):
+#   patrol_started, polecat_checked, polecat_nudged, escalation_sent,
+#   escalation_acked, escalation_closed, patrol_complete
+#
+# Args:
+#   $1 — town_root: path to the gastown town root (default: ~/gt)
+#   $2 — event_type_pattern: grep-compatible pattern matched against "type" field
+#          e.g., "patrol_complete" or "polecat_nudged\|escalation_sent"
+#   $3 — timeout: seconds before giving up (default: 300)
+#
+# Outputs: matching event JSON line on stdout; "WITNESS_TIMEOUT" on timeout.
+# Returns: 0 when a match is found, 1 on timeout or missing events file.
+tail_witness_events() {
+  local town_root="${1:-$GT_TOWN_DIR}"
+  local event_type_pattern="${2:-patrol_complete}"
+  local timeout="${3:-300}"
+
+  local events_file="${town_root}/.events.jsonl"
+  if [ ! -f "$events_file" ]; then
+    echo "WARNING: events file not found: $events_file" >&2
+    echo "WITNESS_TIMEOUT"
+    return 1
+  fi
+
+  local start_time
+  start_time=$(date +%s)
+
+  # tail -F follows the file even if rotated. We filter each new line with python3
+  # so we can parse the JSON "type" field rather than doing a fragile grep on raw JSON.
+  while true; do
+    local elapsed=$(( $(date +%s) - start_time ))
+    if [ "$elapsed" -ge "$timeout" ]; then
+      echo "WITNESS_TIMEOUT: no matching event after ${elapsed}s (pattern: ${event_type_pattern})"
+      return 1
+    fi
+
+    # Read at most the last 500 lines (in case of large file) plus any new ones
+    # We sample each poll cycle rather than blocking on tail -F to keep the function
+    # usable in both interactive and non-interactive shells.
+    local match
+    match=$(tail -n 200 "$events_file" 2>/dev/null | python3 - "$event_type_pattern" <<'PYEOF'
+import sys, json
+
+pattern_parts = sys.argv[1].split("\\|")
+lines = sys.stdin.read().splitlines()
+# Check from most recent backwards
+for line in reversed(lines):
+    line = line.strip()
+    if not line:
+        continue
+    try:
+        event = json.loads(line)
+        etype = event.get("type", "")
+        if any(p in etype for p in pattern_parts):
+            print(json.dumps(event))
+            sys.exit(0)
+    except Exception:
+        continue
+PYEOF
+)
+
+    if [ -n "$match" ]; then
+      echo "$match"
+      return 0
+    fi
+
+    sleep 5
+  done
+}
+
+# check_witness_status()
+# Calls `gt witness status <rig> --json` and returns the parsed status.
+# Non-fatal: returns a safe default JSON if witness is not running or gt fails.
+#
+# Args:
+#   $1 — rig_name: gastown rig name (e.g., "gastown")
+#
+# Outputs: JSON object on stdout:
+#   {
+#     "running": true|false,
+#     "rig_name": "gastown",
+#     "session": "gt-gastown-witness",      // omitted when not running
+#     "monitored_polecats": ["Toast", ...]  // omitted when not running
+#   }
+# Returns: 0 always (callers check .running field).
+check_witness_status() {
+  local rig_name="${1:?rig_name required}"
+
+  local result exit_code=0
+  result=$(cd "$GT_TOWN_DIR" && \
+    PATH="$PATH:${HOME}/go/bin" \
+    "$(gt_cmd)" witness status "$rig_name" --json 2>/dev/null) || exit_code=$?
+
+  if [ "$exit_code" -ne 0 ] || [ -z "$result" ]; then
+    # Witness not running or gt unavailable — return safe default
+    echo "{\"running\":false,\"rig_name\":\"${rig_name}\",\"monitored_polecats\":[]}"
+    return 0
+  fi
+
+  # Validate it looks like JSON; if not, return safe default
+  echo "$result" | python3 -c "
+import sys, json
+try:
+    d = json.load(sys.stdin)
+    # Ensure monitored_polecats is always present (may be absent when not running)
+    d.setdefault('monitored_polecats', [])
+    print(json.dumps(d))
+except Exception:
+    print('{\"running\":false,\"rig_name\":\"" + rig_name + "\",\"monitored_polecats\":[]}')
+" 2>/dev/null || echo "{\"running\":false,\"rig_name\":\"${rig_name}\",\"monitored_polecats\":[]}"
+}
+
 # poll_convoy_status()
 # Polls gt convoy status <id> --json until status="closed" or timeout.
 # This is the v2 completion signal path — replaces wait_for_polecats().
+#
+# Enhanced (Phase 07 — Witness Integration): On each poll cycle, also calls
+# check_witness_status() to detect Witness-reported stalled/crashed polecats.
+# When a stalled polecat is found that belongs to this convoy, emits:
+#   CONVOY_POLECAT_STALLED: <polecat-name> (rig: <rig>)
+# and optionally records a failed SUMMARY stub so the GSD pipeline has an artifact.
 #
 # Args:
 #   $1 — convoy_id (e.g., "hq-cv-xxxxx")
 #   $2 — poll_interval: seconds between checks (default: 60)
 #   $3 — timeout_seconds: max wait time (default: 7200 = 2 hours)
+#   $4 — rig_name: gastown rig to pass to check_witness_status (default: "gastown")
 #
 # Outputs: progress lines to stdout; "CONVOY_DONE" on close; "CONVOY_TIMEOUT" on timeout.
 # Returns: 0 when convoy closed, 1 on timeout.
@@ -980,9 +1107,14 @@ poll_convoy_status() {
   local convoy_id="${1:?convoy_id required}"
   local poll_interval="${2:-60}"
   local timeout_seconds="${3:-7200}"
+  local rig_name="${4:-gastown}"  # Phase 07: rig for Witness status checks
 
   local start_time
   start_time=$(date +%s)
+
+  # Phase 07: track which polecats we have already emitted STALLED for this session
+  # to avoid spamming the log on every poll cycle.
+  declare -A _stalled_reported
 
   while true; do
     local elapsed=$(( $(date +%s) - start_time ))
@@ -1024,6 +1156,91 @@ try:
 except:
     print('?')
 " 2>/dev/null || echo "?")
+
+    # Phase 07 — WITNESS-01: Check Witness status on every poll cycle.
+    # If Witness reports stalled polecats that are part of this convoy's rig,
+    # emit CONVOY_POLECAT_STALLED so the orchestrator can act (WITNESS-02).
+    local witness_json
+    witness_json=$(check_witness_status "$rig_name")
+
+    local witness_running
+    witness_running=$(echo "$witness_json" | python3 -c "
+import sys, json
+try:
+    d = json.load(sys.stdin)
+    print('true' if d.get('running') else 'false')
+except:
+    print('false')
+" 2>/dev/null || echo "false")
+
+    if [ "$witness_running" = "true" ]; then
+      # Extract monitored polecats from Witness status.
+      # Witness does not directly report "stalled" polecats via gt witness status --json;
+      # instead we correlate with polecat list --json (state == "stuck" or "stalled")
+      # filtered to polecats the Witness is monitoring.
+      local polecat_json
+      polecat_json=$(cd "$GT_TOWN_DIR" && \
+        PATH="$PATH:${HOME}/go/bin:/opt/homebrew/bin" \
+        "$(gt_cmd)" polecat list "$rig_name" --json 2>/dev/null || echo "[]")
+
+      # Emit CONVOY_POLECAT_STALLED for each stalled/stuck polecat not yet reported.
+      # Also emit a WITNESS-02 failure SUMMARY stub for affected beads.
+      while IFS= read -r stalled_entry; do
+        [ -z "$stalled_entry" ] && continue
+        local polecat_name bead_id_for_stall
+        polecat_name=$(echo "$stalled_entry" | python3 -c "
+import sys, json
+try:
+    d = json.loads(sys.stdin.read())
+    print(d.get('name', ''))
+except:
+    print('')
+" 2>/dev/null || echo "")
+        bead_id_for_stall=$(echo "$stalled_entry" | python3 -c "
+import sys, json
+try:
+    d = json.loads(sys.stdin.read())
+    print(d.get('issue', ''))
+except:
+    print('')
+" 2>/dev/null || echo "")
+
+        if [ -z "$polecat_name" ]; then
+          continue
+        fi
+
+        # Skip if already reported this session
+        if [ "${_stalled_reported[$polecat_name]+_}" ]; then
+          continue
+        fi
+        _stalled_reported["$polecat_name"]=1
+
+        echo "CONVOY_POLECAT_STALLED: ${polecat_name} (rig: ${rig_name}, bead: ${bead_id_for_stall:-unknown})"
+
+        # WITNESS-02: Auto-record failure — write a failed SUMMARY stub for the bead
+        # so the GSD verification pipeline has an artifact to process.
+        if [ -n "$bead_id_for_stall" ]; then
+          local resolved_plan
+          resolved_plan=$(resolve_plan_from_bead "$bead_id_for_stall" "${PROJECT_DIR:-$(pwd)}")
+          if [ -n "$resolved_plan" ]; then
+            local fail_phase_dir fail_plan_id
+            read -r fail_phase_dir fail_plan_id <<< "$resolved_plan"
+            reconstruct_summary_from_bead "$bead_id_for_stall" "$fail_phase_dir" "$fail_plan_id" || true
+            echo "WITNESS-02: failure SUMMARY recorded for bead ${bead_id_for_stall} (polecat: ${polecat_name})"
+          fi
+        fi
+      done < <(echo "$polecat_json" | python3 -c "
+import sys, json
+try:
+    items = json.load(sys.stdin)
+    for item in items:
+        if item.get('state') in ('stuck', 'stalled'):
+            import json as j
+            print(j.dumps(item))
+except:
+    pass
+" 2>/dev/null)
+    fi
 
     if [ "$status" = "closed" ]; then
       echo "CONVOY_DONE: convoy $convoy_id closed (${completed}/${total} beads)"
