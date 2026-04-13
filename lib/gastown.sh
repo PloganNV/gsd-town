@@ -876,3 +876,161 @@ except:
 
   return "$any_failed"
 }
+
+# =============================================================================
+# v2 CONVOY HANDOFF FUNCTIONS (added Phase 06: mayor-delegation)
+# =============================================================================
+
+# launch_convoy()
+# Stages and launches a convoy for all GSD phase beads in one atomic call.
+# Uses: gt convoy stage <title> <bead-id...> --launch --json
+# This is the v2 convoy handoff path — replaces create_phase_convoy + dispatch_plan_to_polecat.
+#
+# Args:
+#   $1 — phase_num (e.g., "06")
+#   $2 — phase_name (e.g., "mayor-delegation")
+#   $3 — bead_ids (space-separated string: "gt-abc gt-def gt-ghi")
+#
+# Outputs: convoy_id on stdout (e.g., "hq-cv-xxxxx"); progress/errors on stderr.
+# Returns: 0 on success, 1 on failure.
+#
+# JSON schema from gt convoy stage --launch --json (VERIFIED: convoy_stage.go StageResult):
+# {
+#   "status": "staged_ready",      // or "staged_warnings", "error"
+#   "convoy_id": "hq-cv-xyz",
+#   "waves": [{ "number": 1, "tasks": [...] }],
+#   "errors": [],
+#   "warnings": []
+# }
+launch_convoy() {
+  local phase_num="${1:?phase_num required}"
+  local phase_name="${2:?phase_name required}"
+  local bead_ids_str="${3:?bead_ids required}"
+
+  local convoy_title="GSD Phase ${phase_num}: ${phase_name}"
+
+  # Convert space-separated bead IDs to array
+  local bead_ids=()
+  read -ra bead_ids <<< "$bead_ids_str"
+
+  if [ "${#bead_ids[@]}" -eq 0 ]; then
+    echo "ERROR: launch_convoy requires at least one bead ID" >&2
+    return 1
+  fi
+
+  local result exit_code=0
+  result=$(cd "$GT_TOWN_DIR" && \
+    PATH="$PATH:${HOME}/go/bin" \
+    "$(gt_cmd)" convoy stage \
+      "$convoy_title" \
+      "${bead_ids[@]}" \
+      --launch \
+      --json \
+      2>&1) || exit_code=$?
+
+  if [ "$exit_code" -ne 0 ]; then
+    echo "ERROR: gt convoy stage --launch failed (exit $exit_code): $result" >&2
+    return 1
+  fi
+
+  # Parse convoy_id from JSON response
+  local convoy_id
+  convoy_id=$(echo "$result" | python3 -c "
+import sys, json
+try:
+    data = json.load(sys.stdin)
+    status = data.get('status', '')
+    if status == 'error':
+        errors = data.get('errors', [])
+        sys.stderr.write('ERROR: convoy stage errors: ' + str(errors) + '\n')
+        sys.exit(1)
+    cid = data.get('convoy_id', '')
+    if not cid:
+        sys.stderr.write('ERROR: convoy stage returned no convoy_id\n')
+        sys.exit(1)
+    print(cid)
+except Exception as e:
+    sys.stderr.write(f'ERROR: failed to parse convoy stage JSON: {e}\n')
+    sys.exit(1)
+" 2>&1) || return 1
+
+  echo "$convoy_id"
+}
+
+# poll_convoy_status()
+# Polls gt convoy status <id> --json until status="closed" or timeout.
+# This is the v2 completion signal path — replaces wait_for_polecats().
+#
+# Args:
+#   $1 — convoy_id (e.g., "hq-cv-xxxxx")
+#   $2 — poll_interval: seconds between checks (default: 60)
+#   $3 — timeout_seconds: max wait time (default: 7200 = 2 hours)
+#
+# Outputs: progress lines to stdout; "CONVOY_DONE" on close; "CONVOY_TIMEOUT" on timeout.
+# Returns: 0 when convoy closed, 1 on timeout.
+#
+# JSON schema from gt convoy status --json (VERIFIED: convoy.go lines 1808-1837):
+# {
+#   "id": "hq-cv-xyz",
+#   "status": "open",              // "open" | "closed" | "staged_ready" | "staged_warnings"
+#   "completed": 2,
+#   "total": 3
+# }
+poll_convoy_status() {
+  local convoy_id="${1:?convoy_id required}"
+  local poll_interval="${2:-60}"
+  local timeout_seconds="${3:-7200}"
+
+  local start_time
+  start_time=$(date +%s)
+
+  while true; do
+    local elapsed=$(( $(date +%s) - start_time ))
+
+    if [ "$elapsed" -ge "$timeout_seconds" ]; then
+      echo "CONVOY_TIMEOUT: waited ${elapsed}s for convoy $convoy_id to close"
+      return 1
+    fi
+
+    local status_json
+    status_json=$(cd "$GT_TOWN_DIR" && \
+      PATH="$PATH:${HOME}/go/bin" \
+      "$(gt_cmd)" convoy status "$convoy_id" --json 2>/dev/null || echo "{}")
+
+    local status completed total
+    status=$(echo "$status_json" | python3 -c "
+import sys, json
+try:
+    d = json.load(sys.stdin)
+    print(d.get('status', 'unknown'))
+except:
+    print('unknown')
+" 2>/dev/null || echo "unknown")
+
+    completed=$(echo "$status_json" | python3 -c "
+import sys, json
+try:
+    d = json.load(sys.stdin)
+    print(d.get('completed', 0))
+except:
+    print(0)
+" 2>/dev/null || echo "0")
+
+    total=$(echo "$status_json" | python3 -c "
+import sys, json
+try:
+    d = json.load(sys.stdin)
+    print(d.get('total', '?'))
+except:
+    print('?')
+" 2>/dev/null || echo "?")
+
+    if [ "$status" = "closed" ]; then
+      echo "CONVOY_DONE: convoy $convoy_id closed (${completed}/${total} beads)"
+      return 0
+    fi
+
+    echo "CONVOY_POLLING: convoy=$convoy_id status=$status completed=${completed}/${total} (elapsed ${elapsed}s)"
+    sleep "$poll_interval"
+  done
+}
