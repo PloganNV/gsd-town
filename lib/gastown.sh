@@ -447,6 +447,89 @@ print(f"Stored mapping: {plan_id} -> {bead_id}")
 PYEOF
 }
 
+# resolve_plan_from_bead()
+# Looks up the phase_dir and plan_id for a given bead_id in .planning/gastown.json.
+#
+# Args:
+#   $1 - bead_id (e.g., "gt-abc123")
+#   $2 - project_dir (absolute path to project root where .planning/ lives)
+#
+# Outputs: "phase_dir plan_id" (space-separated) on stdout if found; empty string if not found.
+# Returns: 0 always (caller checks for empty output).
+resolve_plan_from_bead() {
+  local bead_id="${1:?bead_id required}"
+  local project_dir="${2:?project_dir required}"
+
+  local registry_path="${project_dir}/.planning/gastown.json"
+  if [ ! -f "$registry_path" ]; then
+    echo ""
+    return 0
+  fi
+
+  python3 - "$registry_path" "$bead_id" "$project_dir" <<'PYEOF'
+import sys, json, os
+
+registry_path, bead_id, project_dir = sys.argv[1:]
+
+try:
+    with open(registry_path) as f:
+        registry = json.load(f)
+except Exception:
+    print("")
+    sys.exit(0)
+
+for phase_num, phase_data in registry.get("phases", {}).items():
+    for plan_id, plan_data in phase_data.get("plans", {}).items():
+        if plan_data.get("bead_id") == bead_id:
+            # Derive phase_dir from project_dir and phase number
+            # Phase dirs match pattern: .planning/phases/NN-*
+            planning_dir = os.path.join(project_dir, ".planning", "phases")
+            phase_dir = ""
+            if os.path.isdir(planning_dir):
+                for entry in os.listdir(planning_dir):
+                    if entry.startswith(phase_num + "-"):
+                        phase_dir = os.path.join(planning_dir, entry)
+                        break
+            if not phase_dir:
+                # Fallback: construct from phase_num only
+                phase_dir = os.path.join(planning_dir, phase_num)
+            print(f"{phase_dir} {plan_id}")
+            sys.exit(0)
+
+print("")
+PYEOF
+}
+
+# check_escalation_status()
+# Checks whether a bead has been flagged as escalated (polecat called gt escalate).
+# Reads bd show --json and checks for escalated bool field or state == "escalated".
+#
+# Args:
+#   $1 - bead_id (e.g., "gt-abc123")
+#
+# Outputs: "yes" if escalated, "no" otherwise.
+check_escalation_status() {
+  local bead_id="${1:?bead_id required}"
+
+  local result
+  result=$(cd "$GT_RIG_DIR" && \
+    "$BD_BIN" show "$bead_id" --json 2>/dev/null | \
+    python3 -c "
+import sys, json
+try:
+    d = json.load(sys.stdin)
+    # Check for escalated boolean or state == 'escalated'
+    if d.get('escalated') or d.get('state') == 'escalated':
+        print('yes')
+    else:
+        print('no')
+except:
+    print('no')
+" 2>/dev/null || echo "no")
+
+  echo "${result:-no}"
+}
+
 # reconstruct_summary_from_bead()
 # Reads polecat execution results from bead notes and writes SUMMARY.md
 # to the GSD phase plan directory.
@@ -534,6 +617,14 @@ wait_for_polecats() {
       for bead_id in "${pending[@]}"; do
         final_states["$bead_id"]="timeout"
         echo "RESULT:${bead_id}:timeout"
+        # Write failure SUMMARY.md so GSD verification pipeline has an artifact
+        local resolved
+        resolved=$(resolve_plan_from_bead "$bead_id" "${PROJECT_DIR:-$(pwd)}")
+        if [ -n "$resolved" ]; then
+          local fail_phase_dir fail_plan_id
+          read -r fail_phase_dir fail_plan_id <<< "$resolved"
+          reconstruct_summary_from_bead "$bead_id" "$fail_phase_dir" "$fail_plan_id" || true
+        fi
       done
       return 1
     fi
@@ -559,6 +650,17 @@ except:
 
       echo "POLLING: ${bead_id} state=${state} (elapsed ${elapsed}s)"
 
+      # RESIL-02: Check escalation BEFORE state case — catches escalated beads
+      # regardless of their Witness state (they may still show as working/idle).
+      local escalated
+      escalated=$(check_escalation_status "$bead_id")
+      if [ "$escalated" = "yes" ]; then
+        final_states["$bead_id"]="escalated"
+        echo "RESULT:${bead_id}:escalated"
+        echo "ESCALATION: polecat for $bead_id called gt escalate — human decision required" >&2
+        continue
+      fi
+
       case "$state" in
         done)
           final_states["$bead_id"]="done"
@@ -568,6 +670,14 @@ except:
           final_states["$bead_id"]="$state"
           echo "RESULT:${bead_id}:${state}"
           echo "ERROR: polecat for $bead_id entered $state state" >&2
+          # RESIL-01: Write failure SUMMARY.md so GSD verification pipeline has an artifact
+          local resolved
+          resolved=$(resolve_plan_from_bead "$bead_id" "${PROJECT_DIR:-$(pwd)}")
+          if [ -n "$resolved" ]; then
+            local fail_phase_dir fail_plan_id
+            read -r fail_phase_dir fail_plan_id <<< "$resolved"
+            reconstruct_summary_from_bead "$bead_id" "$fail_phase_dir" "$fail_plan_id" || true
+          fi
           ;;
         unknown)
           # Polecat not in list — may have completed and been torn down
