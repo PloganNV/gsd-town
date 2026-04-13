@@ -217,10 +217,96 @@ print(match[0]['state'] if match else 'unknown')
   echo "${state:-unknown}"
 }
 
+# check_capacity()
+# Checks whether the gastown scheduler is at its max_polecats limit.
+# Reads scheduler.max_polecats from gt config; if unset/non-numeric, treats as unlimited.
+# Counts active polecats (state not in done/stuck/stalled) against the limit.
+#
+# Outputs: "ok" if capacity available, "full" if at or over limit.
+# Returns: 0 always.
+check_capacity() {
+  # Read scheduler.max_polecats from gastown config
+  local max_polecats
+  max_polecats=$(cd "$GT_TOWN_DIR" && \
+    PATH="$PATH:${HOME}/go/bin" \
+    "$(gt_cmd)" config get scheduler.max_polecats 2>/dev/null | tr -d '[:space:]')
+
+  # If config returns empty or non-numeric, treat as unlimited (T-04-01 mitigation)
+  if [ -z "$max_polecats" ] || ! echo "$max_polecats" | grep -qE '^[0-9]+$'; then
+    echo "ok"
+    return 0
+  fi
+
+  # Count active polecats (working + idle states, not done/stuck/stalled)
+  local active_count
+  active_count=$(cd "$GT_TOWN_DIR" && \
+    PATH="$PATH:${HOME}/go/bin:/opt/homebrew/bin" \
+    "$(gt_cmd)" polecat list gastown --json 2>/dev/null | \
+    python3 -c "
+import sys, json
+try:
+    items = json.load(sys.stdin)
+    active = [i for i in items if i.get('state') not in ('done', 'stuck', 'stalled')]
+    print(len(active))
+except:
+    print(0)
+" 2>/dev/null || echo "0")
+
+  if [ "$active_count" -ge "$max_polecats" ]; then
+    echo "full"
+  else
+    echo "ok"
+  fi
+}
+
+# queue_or_dispatch()
+# Capacity-governed dispatch wrapper. Polls check_capacity() before calling
+# dispatch_plan_to_polecat(). Queues the dispatch (retries every poll_interval)
+# until capacity opens or max_wait is exceeded (T-04-02 mitigation).
+#
+# Args:
+#   $1 — bead_id (e.g., "gt-abc123")
+#   $2 — convoy_id (e.g., "hq-cv-xxxxx")
+#   $3 — poll_interval: seconds between capacity checks (default: 30)
+#   $4 — max_wait: max seconds to wait for capacity (default: 900 = 15min)
+#
+# Outputs: status messages on stdout; errors on stderr.
+# Returns: 0 on successful dispatch, 1 on timeout or dispatch failure.
+queue_or_dispatch() {
+  local bead_id="${1:?bead_id required}"
+  local convoy_id="${2:?convoy_id required}"
+  local poll_interval="${3:-30}"
+  local max_wait="${4:-900}"  # 15 min queue timeout
+
+  local start_time
+  start_time=$(date +%s)
+
+  while true; do
+    local capacity
+    capacity=$(check_capacity)
+    if [ "$capacity" = "ok" ]; then
+      dispatch_plan_to_polecat "$bead_id" "$convoy_id"
+      return $?
+    fi
+
+    local elapsed=$(( $(date +%s) - start_time ))
+    if [ "$elapsed" -ge "$max_wait" ]; then
+      echo "ERROR: queue_or_dispatch timed out after ${elapsed}s waiting for capacity for $bead_id" >&2
+      return 1
+    fi
+
+    echo "CAPACITY: at max_polecats limit — $bead_id queued (waited ${elapsed}s, retry in ${poll_interval}s)"
+    sleep "$poll_interval"
+  done
+}
+
 # dispatch_plan_to_polecat()
 # Dispatches a GSD plan bead to the gastown rig via gt sling.
 # Adds the bead to the phase convoy, then slings to gastown.
 # Uses --no-convoy (GSD manages its own convoy) and --no-merge (GSD verification pipeline).
+#
+# Prefer queue_or_dispatch() over calling this directly — queue_or_dispatch()
+# enforces scheduler.max_polecats before dispatching.
 #
 # Args:
 #   $1 — bead ID (e.g., "gt-abc123")
