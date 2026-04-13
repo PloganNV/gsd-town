@@ -1,0 +1,3 @@
+[submodule "vendor/gastown"]
+	path = vendor/gastown
+	url = https://github.com/laulpogan/gastown.git
