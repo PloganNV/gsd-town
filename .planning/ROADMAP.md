@@ -28,7 +28,11 @@ Decimal phases appear between their surrounding integers in numeric order.
   1. A GSD-Town fork of gastown exists with upstream tracking configured
   2. Running `gt done` without a committed/pushed/PR'd branch is rejected with a clear error
   3. Convoy event polling correctly reads event UUIDs as strings (CHAR(36)), not int64 — no type mismatch panics
-**Plans**: TBD
+**Plans**: 2 plans
+
+Plans:
+- [ ] 01-01-PLAN.md — Fork GitHub + configure remotes + UUID regression test (FORK-01, FORK-03)
+- [ ] 01-02-PLAN.md — gt done pre-flight push/PR enforcement (FORK-02)
 
 ### Phase 2: npm Package
 **Goal**: GSD-Town is installable as an npm package that registers a GSD skill and wires execute-phase dispatch
@@ -79,7 +83,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Fork + Critical Fixes | 0/TBD | Not started | - |
+| 1. Fork + Critical Fixes | 0/2 | Not started | - |
 | 2. npm Package | 0/TBD | Not started | - |
 | 3. Auto-Setup | 0/TBD | Not started | - |
 | 4. Resilience | 0/TBD | Not started | - |
