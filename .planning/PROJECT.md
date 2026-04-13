@@ -2,11 +2,11 @@
 
 ## What This Is
 
-GSD-Town is a portable GSD plugin that adds multi-agent execution to any project via Gas Town. Install it, point it at a gastown town, and `/gsd-execute-phase` automatically dispatches polecats (worker agents) instead of single-agent Task() calls. Each polecat gets its own tmux session and git worktree — true process-isolated parallel execution with crash recovery.
+GSD-Town is a portable GSD plugin that adds multi-agent execution to any project via Gas Town. It spins up and manages its own town workspace — no pre-existing gastown installation required. Run `/gsd-execute-phase` and it automatically bootstraps a town, creates a rig for your project, and dispatches polecats (worker agents) instead of single-agent Task() calls. Each polecat gets its own tmux session and git worktree — true process-isolated parallel execution with crash recovery.
 
 ## Core Value
 
-Any GSD project gets multi-agent parallel execution with zero configuration — detect gastown, dispatch polecats, collect results.
+Any GSD project gets multi-agent parallel execution by running a single command — GSD-Town handles the entire gastown lifecycle (install, town creation, rig setup, dispatch, teardown).
 
 ## Requirements
 

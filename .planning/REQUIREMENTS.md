@@ -19,10 +19,11 @@
 
 ### Auto-Setup
 
-- [ ] **AUTO-01**: Auto-detect existing gastown town (~/gt/ or GT_TOWN_ROOT)
-- [ ] **AUTO-02**: Auto-install gastown dependencies if not present (go, dolt, beads, tmux, gt)
-- [ ] **AUTO-03**: Auto-create town + rig + crew for current project on first use
-- [ ] **AUTO-04**: Zero-config dispatch — `workflow.use_gastown: auto` detects and dispatches
+- [ ] **AUTO-01**: GSD-Town spins up its own managed town workspace (not user's ~/gt/)
+- [ ] **AUTO-02**: Auto-install all gastown dependencies if not present (go, dolt, beads, tmux, gt)
+- [ ] **AUTO-03**: Auto-create rig + crew for current project within managed town on first dispatch
+- [ ] **AUTO-04**: Zero-config dispatch — `workflow.use_gastown: auto` bootstraps everything on first use
+- [ ] **AUTO-05**: Town lifecycle management — start daemon on dispatch, stop on idle, clean up on uninstall
 
 ### Resilience
 
@@ -67,6 +68,7 @@
 | AUTO-02 | Phase 3 | Pending |
 | AUTO-03 | Phase 3 | Pending |
 | AUTO-04 | Phase 3 | Pending |
+| AUTO-05 | Phase 3 | Pending |
 | RESIL-01 | Phase 4 | Pending |
 | RESIL-02 | Phase 4 | Pending |
 | RESIL-03 | Phase 4 | Pending |
@@ -75,8 +77,8 @@
 | POLISH-02 | Phase 5 | Pending |
 
 **Coverage:**
-- v1 requirements: 16 total
-- Mapped to phases: 16
+- v1 requirements: 17 total
+- Mapped to phases: 17
 - Unmapped: 0
 
 ---
