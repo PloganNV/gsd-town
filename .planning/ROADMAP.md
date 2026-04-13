@@ -42,7 +42,11 @@ Plans:
   1. `npm install -g gsd-town` succeeds and puts gastown.sh dispatch functions on the PATH
   2. Running `/gsd-town-setup` in any project configures it for gastown dispatch
   3. execute-phase.md's gastown dispatch block is installable as a hook or patch with a single command
-**Plans**: TBD
+**Plans**: 2 plans
+
+Plans:
+- [ ] 02-01-PLAN.md — npm package scaffold + gastown.sh bundle + gsd-town CLI (PKG-01)
+- [ ] 02-02-PLAN.md — GSD skill /gsd-town-setup + execute-phase.md patch installer (PKG-02, PKG-03)
 
 ### Phase 3: Auto-Setup
 **Goal**: A user can run `/gsd-execute-phase` in a fresh project and gastown is detected, installed, and configured with no manual steps
@@ -84,7 +88,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Fork + Critical Fixes | 0/2 | Not started | - |
-| 2. npm Package | 0/TBD | Not started | - |
+| 2. npm Package | 0/2 | Not started | - |
 | 3. Auto-Setup | 0/TBD | Not started | - |
 | 4. Resilience | 0/TBD | Not started | - |
 | 5. Polish | 0/TBD | Not started | - |
