@@ -61,7 +61,7 @@ Plans:
 **Plans**: 2 plans
 
 Plans:
-- [ ] 03-01-PLAN.md — lib/auto-setup.sh: detect_town, check_and_install_deps, bootstrap_town (AUTO-01, AUTO-02, AUTO-03)
+- [x] 03-01-PLAN.md — lib/auto-setup.sh: detect_town, check_and_install_deps, bootstrap_town (AUTO-01, AUTO-02, AUTO-03)
 - [ ] 03-02-PLAN.md — bin/gsd-town.js setup/teardown/status + preuninstall cleanup (AUTO-04, AUTO-05)
 
 ### Phase 4: Resilience

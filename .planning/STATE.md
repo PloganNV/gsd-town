@@ -2,16 +2,16 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-status: verifying
-stopped_at: Completed 02-npm-package-02-PLAN.md
-last_updated: "2026-04-13T20:55:38.361Z"
+status: executing
+stopped_at: Completed 03-auto-setup-01-PLAN.md
+last_updated: "2026-04-13T21:03:30.389Z"
 last_activity: 2026-04-13
 progress:
   total_phases: 5
   completed_phases: 2
-  total_plans: 4
-  completed_plans: 4
-  percent: 100
+  total_plans: 6
+  completed_plans: 5
+  percent: 83
 ---
 
 # Project State
@@ -21,13 +21,13 @@ progress:
 See: .planning/PROJECT.md (updated 2026-04-13)
 
 **Core value:** Any GSD project gets multi-agent parallel execution with zero configuration
-**Current focus:** Phase 02 — npm Package
+**Current focus:** Phase 03 — Auto-Setup
 
 ## Current Position
 
-Phase: 3
-Plan: Not started
-Status: Phase complete — ready for verification
+Phase: 03 (Auto-Setup) — EXECUTING
+Plan: 2 of 2
+Status: Ready to execute
 Last activity: 2026-04-13
 
 Progress: [░░░░░░░░░░] 0%
@@ -56,6 +56,7 @@ Progress: [░░░░░░░░░░] 0%
 | Phase 01-fork-and-critical-fixes P01 | 25 | 2 tasks | 1 files |
 | Phase 02-npm-package P01 | 8 | 2 tasks | 5 files |
 | Phase 02-npm-package P02 | 2 | 2 tasks | 2 files |
+| Phase 03-auto-setup P01 | 2 | 3 tasks | 1 files |
 
 ## Accumulated Context
 
@@ -76,6 +77,8 @@ Recent decisions affecting current work:
 - [Phase 02-npm-package]: GASTOWN_SH path anchored to __dirname — no user-controlled input reaches execSync
 - [Phase 02-npm-package]: Idempotency check uses content-level string match for source+gastown.sh — handles pre-existing inline source pattern in execute-phase.md
 - [Phase 02-npm-package]: SKILL_SRC copied via fs.readdirSync loop — all files in skills/gsd-town-setup/ are included automatically
+- [Phase 03-auto-setup]: auto-setup.sh does not source gastown.sh internally — caller sources both files independently to avoid double-sourcing
+- [Phase 03-auto-setup]: [T-03-01] rig_name and crew username both slugified to [a-z0-9-] before passing to gt commands
 
 ### Pending Todos
 
@@ -89,6 +92,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-04-13T20:55:16.368Z
-Stopped at: Completed 02-npm-package-02-PLAN.md
+Last session: 2026-04-13T21:03:30.386Z
+Stopped at: Completed 03-auto-setup-01-PLAN.md
 Resume file: None
