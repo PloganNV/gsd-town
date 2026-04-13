@@ -63,15 +63,16 @@ Progress: [====------] 40% (v2.0 phases)
 - Backward compat required: v1 CLI dispatch must remain as fallback throughout v2.0 build
 - [Phase 06]: Used convoy polling (gt convoy status --json) over push notifications for completion signal
 - [Phase 06]: GT_CONVOY_CAPABLE detection via gt convoy stage --help exit code — zero-cost on older gastown
+- [Phase 07]: tail_witness_events uses poll-with-sleep rather than blocking tail -F for shell compatibility
+- [Phase 07]: check_witness_status returns safe-default JSON on any failure — callers never null-check
+- [Phase 07]: poll_convoy_status stall deduplication via associative array to avoid log spam per session
 - [Phase 09]: STATE.md is a generated view from beads; beads are source of truth (BEADS-01)
 - [Phase 09]: bd show returns array — always unwrap element [0] via python3
 - [Phase 09]: Convoy children must be counted explicitly; auto-propagation not reliable
 
 ### Blockers/Concerns
 
-- Mayor programmatic interface unknown — Phase 6 plan 06-01 must research before implementation
 - Refinery MR bead lifecycle unknown — Phase 8 plan 08-01 must research before implementation
-- Witness event subscription mechanism unknown — Phase 7 plan 07-01 must research before implementation
 
 ### Pending Todos
 
