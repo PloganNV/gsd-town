@@ -124,7 +124,7 @@ Plans:
 **Plans**: TBD
 
 Plans:
-- [ ] 08-01: Research Refinery MR bead lifecycle + implement branch submission + confirmation signal handler
+- [x] 08-01: Research Refinery MR bead lifecycle + implement branch submission + confirmation signal handler
 
 #### Phase 9: Beads as Truth
 **Goal**: Dolt-backed beads replace STATE.md as the source of work state; verifier reads results directly from beads
@@ -138,7 +138,7 @@ Plans:
 **Plans**: TBD
 
 Plans:
-- [ ] 09-01: Implement STATE.md generation from beads + verifier bead reader + convoy-closed phase gate
+- [x] 09-01: Implement STATE.md generation from beads + verifier bead reader + convoy-closed phase gate
 
 #### Phase 10: Seance Continuity
 **Goal**: Resumed and re-dispatched polecats automatically receive full prior session history from Seance
@@ -151,7 +151,7 @@ Plans:
 **Plans**: TBD
 
 Plans:
-- [ ] 10-01: Auto-query Seance on polecat resume + include predecessor Seance history in re-dispatch payload
+- [x] 10-01: Auto-query Seance on polecat resume + include predecessor Seance history in re-dispatch payload
 
 ## Progress
 
@@ -169,4 +169,4 @@ Phases execute in numeric order: 6 → 7 → 8 → 9 → 10
 | 7. Witness Integration | v2.0 | 0/1 | Not started | - |
 | 8. Refinery Merging | v2.0 | 0/1 | Not started | - |
 | 9. Beads as Truth | v2.0 | 0/1 | Not started | - |
-| 10. Seance Continuity | v2.0 | 0/1 | Not started | - |
+| 10. Seance Continuity | v2.0 | 1/0 | Complete    | 2026-04-13 |
