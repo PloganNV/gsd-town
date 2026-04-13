@@ -29,8 +29,8 @@
 
 ### Seance Continuity
 
-- [ ] **SEANCE-01**: Polecats auto-query Seance on resume for prior session decisions/context
-- [ ] **SEANCE-02**: Failed polecat re-dispatch includes full Seance history from predecessor
+- [x] **SEANCE-01**: Polecats auto-query Seance on resume for prior session decisions/context
+- [x] **SEANCE-02**: Failed polecat re-dispatch includes full Seance history from predecessor
 
 ## Future Requirements
 
@@ -61,8 +61,8 @@
 | BEADS-01 | Phase 9 | Complete |
 | BEADS-02 | Phase 9 | Complete |
 | BEADS-03 | Phase 9 | Complete |
-| SEANCE-01 | Phase 10 | Pending |
-| SEANCE-02 | Phase 10 | Pending |
+| SEANCE-01 | Phase 10 | Complete |
+| SEANCE-02 | Phase 10 | Complete |
 
 **Coverage:**
 - v2.0 requirements: 12 total

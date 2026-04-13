@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v2.0
 milestone_name: Gastown Drives
 status: verifying
-stopped_at: Completed 09-01-PLAN.md
-last_updated: "2026-04-13T23:01:37.291Z"
+stopped_at: Completed 10-01-PLAN.md
+last_updated: "2026-04-13T23:05:34.077Z"
 last_activity: 2026-04-13
 progress:
   total_phases: 6
   completed_phases: 1
   total_plans: 1
-  completed_plans: 3
+  completed_plans: 5
   percent: 100
 ---
 
@@ -51,6 +51,7 @@ Progress: [====------] 40% (v2.0 phases)
 | Phase 06 P01 | 1200 | 2 tasks | 2 files |
 | Phase 07 P01 | 109 | 1 task | 2 files |
 | Phase 09 P01 | 90 | 1 tasks | 1 files |
+| Phase 10 P01 | 89 | 1 tasks | 2 files |
 
 ## Accumulated Context
 
@@ -69,6 +70,8 @@ Progress: [====------] 40% (v2.0 phases)
 - [Phase 09]: STATE.md is a generated view from beads; beads are source of truth (BEADS-01)
 - [Phase 09]: bd show returns array — always unwrap element [0] via python3
 - [Phase 09]: Convoy children must be counted explicitly; auto-propagation not reliable
+- [Phase 10]: Primary discovery via .events.jsonl scan — more reliable than parsing gt seance table output
+- [Phase 10]: [Phase 10]: inject_seance_into_notes reads-then-appends to preserve existing bead notes
 
 ### Blockers/Concerns
 
@@ -80,6 +83,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-04-13T23:01:37.287Z
-Stopped at: Completed 09-01-PLAN.md
+Last session: 2026-04-13T23:05:34.073Z
+Stopped at: Completed 10-01-PLAN.md
 Resume file: None
