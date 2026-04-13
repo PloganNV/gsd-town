@@ -45,15 +45,14 @@ Run \`gsd-town setup\` in any GSD project to configure polecat dispatch manually
 // ---------------------------------------------------------------------------
 
 function runBash(script, opts = {}) {
-  const fullScript = [
-    `source "${GASTOWN_SH}"`,
-    `source "${AUTO_SETUP_SH}"`,
-    script,
-  ].join('\n');
-  return execSync(`bash -c ${JSON.stringify(fullScript)}`, {
+  const fullScript = `source "${GASTOWN_SH}"\nsource "${AUTO_SETUP_SH}"\n${script}`;
+  // Use stdin pipe instead of bash -c to avoid shell escaping issues with
+  // JSON.stringify mangling newlines into literal \\n characters.
+  return execSync('bash -s', {
+    input: fullScript,
     encoding: 'utf8',
     timeout: opts.timeout || 300000, // 5 min default for installs
-    stdio: opts.stdio || 'pipe',
+    stdio: opts.stdio === 'inherit' ? ['pipe', 'inherit', 'inherit'] : undefined,
   });
 }
 

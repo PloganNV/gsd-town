@@ -312,9 +312,30 @@ bootstrap_town() {
       "import sys,json; rigs=json.load(sys.stdin); exit(0 if any(r.get('name')=='${rig_name}' for r in rigs) else 1)" \
       2>/dev/null; then
     echo "  [bootstrap] adding rig: ${rig_name} -> ${project_dir}"
-    (cd "${GSD_TOWN_ROOT}" && PATH="$PATH:${HOME}/go/bin:/opt/homebrew/bin" "${gt_bin}" rig add "${rig_name}" "${project_dir}" 2>&1) || {
-      echo "  [ERROR] gt rig add failed" >&2
-      return 1
+    # gt rig add expects <name> <git-url> and clones into the town.
+    # For external projects (already on disk), we:
+    #   1. Create a symlink inside the town pointing to the project
+    #   2. Use --adopt to register the symlinked directory as a rig
+    local rig_link="${GSD_TOWN_ROOT}/${rig_name}"
+    if [ ! -e "${rig_link}" ]; then
+      ln -s "${project_dir}" "${rig_link}"
+      echo "  [bootstrap] symlinked ${rig_link} -> ${project_dir}"
+    fi
+    (cd "${GSD_TOWN_ROOT}" && PATH="$PATH:${HOME}/go/bin:/opt/homebrew/bin" "${gt_bin}" rig add "${rig_name}" --adopt --force 2>&1) || {
+      # If --adopt fails, try with the git remote URL instead
+      local git_url
+      git_url=$(cd "${project_dir}" && git remote get-url origin 2>/dev/null || echo "")
+      if [ -n "${git_url}" ]; then
+        echo "  [bootstrap] --adopt failed, trying git URL: ${git_url}"
+        rm -f "${rig_link}" 2>/dev/null  # remove symlink, let gt clone
+        (cd "${GSD_TOWN_ROOT}" && PATH="$PATH:${HOME}/go/bin:/opt/homebrew/bin" "${gt_bin}" rig add "${rig_name}" "${git_url}" 2>&1) || {
+          echo "  [ERROR] gt rig add failed with both --adopt and git URL" >&2
+          return 1
+        }
+      else
+        echo "  [ERROR] gt rig add --adopt failed and no git remote found" >&2
+        return 1
+      fi
     }
   else
     echo "  [bootstrap] rig ${rig_name} already registered"
