@@ -1,0 +1,19 @@
+{
+  "name": "gsd-town",
+  "version": "0.1.0",
+  "description": "Multi-agent parallel execution for GSD projects via Gas Town polecats",
+  "keywords": ["gsd", "gastown", "claude", "multi-agent", "ai"],
+  "license": "MIT",
+  "engines": { "node": ">=18" },
+  "bin": {
+    "gsd-town": "./bin/gsd-town.js"
+  },
+  "scripts": {
+    "postinstall": "node ./bin/postinstall.js"
+  },
+  "files": [
+    "bin/",
+    "lib/",
+    "skills/"
+  ]
+}
