@@ -45,7 +45,7 @@ Plans:
 **Plans**: 2 plans
 
 Plans:
-- [ ] 02-01-PLAN.md — npm package scaffold + gastown.sh bundle + gsd-town CLI (PKG-01)
+- [x] 02-01-PLAN.md — npm package scaffold + gastown.sh bundle + gsd-town CLI (PKG-01)
 - [ ] 02-02-PLAN.md — GSD skill /gsd-town-setup + execute-phase.md patch installer (PKG-02, PKG-03)
 
 ### Phase 3: Auto-Setup

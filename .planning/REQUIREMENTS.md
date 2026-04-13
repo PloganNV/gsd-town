@@ -13,7 +13,7 @@
 
 ### Packaging
 
-- [ ] **PKG-01**: GSD-Town npm package exports all dispatch functions as importable module
+- [x] **PKG-01**: GSD-Town npm package exports all dispatch functions as importable module
 - [ ] **PKG-02**: GSD skill `/gsd-town-setup` configures any project for gastown dispatch
 - [ ] **PKG-03**: execute-phase.md gastown dispatch installable as hook or patch
 
@@ -61,7 +61,7 @@
 | FORK-01 | Phase 1 | Complete |
 | FORK-02 | Phase 1 | Pending |
 | FORK-03 | Phase 1 | Complete |
-| PKG-01 | Phase 2 | Pending |
+| PKG-01 | Phase 2 | Complete |
 | PKG-02 | Phase 2 | Pending |
 | PKG-03 | Phase 2 | Pending |
 | AUTO-01 | Phase 3 | Pending |
