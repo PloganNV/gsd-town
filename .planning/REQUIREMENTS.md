@@ -23,9 +23,9 @@
 
 ### Beads as Truth
 
-- [ ] **BEADS-01**: Beads are source of truth for work status; STATE.md is a generated view
-- [ ] **BEADS-02**: GSD verifier reads polecat results directly from beads (no SUMMARY.md round-trip)
-- [ ] **BEADS-03**: Phase completion derived from convoy status (all beads closed = phase done)
+- [x] **BEADS-01**: Beads are source of truth for work status; STATE.md is a generated view
+- [x] **BEADS-02**: GSD verifier reads polecat results directly from beads (no SUMMARY.md round-trip)
+- [x] **BEADS-03**: Phase completion derived from convoy status (all beads closed = phase done)
 
 ### Seance Continuity
 
@@ -58,9 +58,9 @@
 | WITNESS-02 | Phase 7 | Pending |
 | REFINERY-01 | Phase 8 | Pending |
 | REFINERY-02 | Phase 8 | Pending |
-| BEADS-01 | Phase 9 | Pending |
-| BEADS-02 | Phase 9 | Pending |
-| BEADS-03 | Phase 9 | Pending |
+| BEADS-01 | Phase 9 | Complete |
+| BEADS-02 | Phase 9 | Complete |
+| BEADS-03 | Phase 9 | Complete |
 | SEANCE-01 | Phase 10 | Pending |
 | SEANCE-02 | Phase 10 | Pending |
 

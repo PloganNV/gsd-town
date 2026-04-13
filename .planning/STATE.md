@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v2.0
 milestone_name: Gastown Drives
 status: verifying
-stopped_at: Completed 06-01-PLAN.md
-last_updated: "2026-04-13T22:52:59.670Z"
+stopped_at: Completed 09-01-PLAN.md
+last_updated: "2026-04-13T23:01:37.291Z"
 last_activity: 2026-04-13
 progress:
-  total_phases: 5
+  total_phases: 6
   completed_phases: 1
   total_plans: 1
-  completed_plans: 1
+  completed_plans: 3
   percent: 100
 ---
 
@@ -21,16 +21,16 @@ progress:
 See: .planning/PROJECT.md (updated 2026-04-13)
 
 **Core value:** GSD navigates, gastown drives
-**Current focus:** Phase 06 — Mayor Delegation
+**Current focus:** Phase 07 — Witness Integration
 
 ## Current Position
 
 Phase: 7
-Plan: Not started
+Plan: 1 of 1 complete
 Status: Phase complete — ready for verification
 Last activity: 2026-04-13
 
-Progress: [░░░░░░░░░░] 0% (v2.0 phases)
+Progress: [====------] 40% (v2.0 phases)
 
 ## Performance Metrics
 
@@ -45,9 +45,12 @@ Progress: [░░░░░░░░░░] 0% (v2.0 phases)
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
 | 06 | 1 | - | - |
+| 07 | 1 | 109s | 109s |
 
 *Updated after each plan completion*
 | Phase 06 P01 | 1200 | 2 tasks | 2 files |
+| Phase 07 P01 | 109 | 1 task | 2 files |
+| Phase 09 P01 | 90 | 1 tasks | 1 files |
 
 ## Accumulated Context
 
@@ -60,6 +63,9 @@ Progress: [░░░░░░░░░░] 0% (v2.0 phases)
 - Backward compat required: v1 CLI dispatch must remain as fallback throughout v2.0 build
 - [Phase 06]: Used convoy polling (gt convoy status --json) over push notifications for completion signal
 - [Phase 06]: GT_CONVOY_CAPABLE detection via gt convoy stage --help exit code — zero-cost on older gastown
+- [Phase 09]: STATE.md is a generated view from beads; beads are source of truth (BEADS-01)
+- [Phase 09]: bd show returns array — always unwrap element [0] via python3
+- [Phase 09]: Convoy children must be counted explicitly; auto-propagation not reliable
 
 ### Blockers/Concerns
 
@@ -73,6 +79,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-04-13T22:52:31.878Z
-Stopped at: Completed 06-01-PLAN.md
+Last session: 2026-04-13T23:01:37.287Z
+Stopped at: Completed 09-01-PLAN.md
 Resume file: None
