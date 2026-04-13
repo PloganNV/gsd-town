@@ -51,13 +51,18 @@ Plans:
 ### Phase 3: Auto-Setup
 **Goal**: A user can run `/gsd-execute-phase` in a fresh project and gastown is detected, installed, and configured with no manual steps
 **Depends on**: Phase 2
-**Requirements**: AUTO-01, AUTO-02, AUTO-03, AUTO-04
+**Requirements**: AUTO-01, AUTO-02, AUTO-03, AUTO-04, AUTO-05
 **Success Criteria** (what must be TRUE):
-  1. GSD-Town detects an existing town at `~/gt/` or `$GT_TOWN_ROOT` without prompting the user
+  1. GSD-Town detects an existing town at `~/.gsd-town`, `~/gt/`, or `$GT_TOWN_ROOT` without prompting the user
   2. If gastown dependencies (go, dolt, beads, tmux, gt) are missing, they are installed automatically
   3. A new project gets a town, rig, and crew provisioned on first use without any manual `gt` commands
   4. Setting `workflow.use_gastown: auto` is the only config change needed to enable polecat dispatch
-**Plans**: TBD
+  5. Town lifecycle (daemon start/stop, teardown, npm uninstall cleanup) is fully managed
+**Plans**: 2 plans
+
+Plans:
+- [ ] 03-01-PLAN.md — lib/auto-setup.sh: detect_town, check_and_install_deps, bootstrap_town (AUTO-01, AUTO-02, AUTO-03)
+- [ ] 03-02-PLAN.md — bin/gsd-town.js setup/teardown/status + preuninstall cleanup (AUTO-04, AUTO-05)
 
 ### Phase 4: Resilience
 **Goal**: GSD-Town handles polecat failures, blockages, and capacity limits without human intervention or silent data loss
@@ -89,6 +94,6 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 |-------|----------------|--------|-----------|
 | 1. Fork + Critical Fixes | 0/2 | Not started | - |
 | 2. npm Package | 0/2 | Not started | - |
-| 3. Auto-Setup | 0/TBD | Not started | - |
+| 3. Auto-Setup | 0/2 | Not started | - |
 | 4. Resilience | 0/TBD | Not started | - |
 | 5. Polish | 0/TBD | Not started | - |
