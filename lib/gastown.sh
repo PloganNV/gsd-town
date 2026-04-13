@@ -1251,3 +1251,165 @@ except:
     sleep "$poll_interval"
   done
 }
+
+# =============================================================================
+# REFINERY INTEGRATION (Phase 8)
+# =============================================================================
+#
+# When Refinery is active for a rig, it owns the merge queue. GSD must NOT
+# perform its own worktree merge (execute-phase.md step 5.5) when Refinery
+# is handling merges.
+#
+# Dispatch path behavior:
+#   - v2 convoy path (Phase 6): already skips GSD's worktree merge because
+#     convoys manage their own lifecycle via gt done → Refinery.
+#   - Direct polecat dispatch: same — polecats call gt done which creates the
+#     MR bead (gt:merge-request wisp) and notifies Witness → Refinery.
+#
+# GSD orchestrators that need to wait for a merge can call:
+#   wait_for_refinery_merge <mr_bead_id> [timeout_seconds]
+#
+# GSD orchestrators that need to check if Refinery is active before deciding
+# whether to merge themselves can call:
+#   detect_refinery_active <rig_name>
+
+# wait_for_refinery_merge()
+# Polls a merge-request bead until Refinery closes it (merged) or rejects it.
+#
+# Refinery closes the MR bead with status "closed" on success, or adds a
+# rejection tag / sets status "rejected" on failure.
+#
+# Args:
+#   $1 — mr_bead_id: the gt:merge-request bead ID (e.g., "gt-mr-abc123")
+#   $2 — timeout: seconds to wait before returning "timeout" (default: 300)
+#
+# Outputs: one of "merged" | "failed" | "timeout" on stdout; progress on stderr.
+# Returns: 0 always (caller checks stdout to decide what to do).
+wait_for_refinery_merge() {
+  local mr_bead_id="${1:?mr_bead_id required}"
+  local timeout="${2:-300}"
+  local poll_interval=10
+  local elapsed=0
+
+  echo "REFINERY_WAIT: watching MR bead ${mr_bead_id} (timeout ${timeout}s)" >&2
+
+  while [ "$elapsed" -lt "$timeout" ]; do
+    local bead_json
+    bead_json=$(cd "$GT_RIG_DIR" && \
+      PATH="$PATH:${HOME}/go/bin:/opt/homebrew/bin" \
+      "${BD_BIN}" show "$mr_bead_id" --json 2>/dev/null || echo "{}")
+
+    local bead_status
+    bead_status=$(echo "$bead_json" | python3 -c "
+import sys, json
+try:
+    d = json.loads(sys.stdin.read())
+    print(d.get('status', ''))
+except:
+    print('')
+" 2>/dev/null || echo "")
+
+    local bead_tags
+    bead_tags=$(echo "$bead_json" | python3 -c "
+import sys, json
+try:
+    d = json.loads(sys.stdin.read())
+    tags = d.get('tags', [])
+    print(' '.join(tags))
+except:
+    print('')
+" 2>/dev/null || echo "")
+
+    # Refinery signals failure via a rejection tag or explicit status
+    if echo "$bead_tags" | grep -qw "rejected" || [ "$bead_status" = "rejected" ]; then
+      echo "REFINERY_WAIT: MR bead ${mr_bead_id} was rejected" >&2
+      echo "failed"
+      return 0
+    fi
+
+    # Refinery signals success by closing the MR bead
+    if [ "$bead_status" = "closed" ]; then
+      echo "REFINERY_WAIT: MR bead ${mr_bead_id} closed (merged)" >&2
+      echo "merged"
+      return 0
+    fi
+
+    echo "REFINERY_WAIT: status=${bead_status:-unknown} elapsed=${elapsed}s — sleeping ${poll_interval}s" >&2
+    sleep "$poll_interval"
+    elapsed=$(( elapsed + poll_interval ))
+  done
+
+  echo "REFINERY_WAIT: timed out after ${timeout}s waiting for ${mr_bead_id}" >&2
+  echo "timeout"
+  return 0
+}
+
+# detect_refinery_active()
+# Returns "true" if Refinery is active for a given rig; "false" otherwise.
+#
+# Detection strategy (in order):
+#   1. Check gt rig config for a refinery_enabled flag.
+#   2. Check for a running Refinery process (gastown wisp gt:refinery).
+#   3. Return "false" if neither check confirms Refinery.
+#
+# Args:
+#   $1 — rig_name: name of the rig to check (e.g., "gastown")
+#
+# Outputs: "true" or "false" on stdout.
+# Returns: 0 always.
+detect_refinery_active() {
+  local rig_name="${1:?rig_name required}"
+
+  # Check 1: gt rig config --json for refinery_enabled key
+  local rig_config
+  rig_config=$(cd "$GT_TOWN_DIR" && \
+    PATH="$PATH:${HOME}/go/bin:/opt/homebrew/bin" \
+    "$(gt_cmd)" rig config "$rig_name" --json 2>/dev/null || echo "{}")
+
+  local refinery_flag
+  refinery_flag=$(echo "$rig_config" | python3 -c "
+import sys, json
+try:
+    d = json.loads(sys.stdin.read())
+    # Support nested: {refinery: {enabled: true}} or flat {refinery_enabled: true}
+    refinery = d.get('refinery', {})
+    if isinstance(refinery, dict):
+        val = refinery.get('enabled', None)
+    else:
+        val = None
+    if val is None:
+        val = d.get('refinery_enabled', None)
+    print('true' if val is True or val == 'true' else 'false')
+except:
+    print('false')
+" 2>/dev/null || echo "false")
+
+  if [ "$refinery_flag" = "true" ]; then
+    echo "true"
+    return 0
+  fi
+
+  # Check 2: look for a live Refinery wisp in the rig's active wisps
+  local wisp_list
+  wisp_list=$(cd "$GT_TOWN_DIR" && \
+    PATH="$PATH:${HOME}/go/bin:/opt/homebrew/bin" \
+    "$(gt_cmd)" wisp list "$rig_name" --json 2>/dev/null || echo "[]")
+
+  local has_refinery
+  has_refinery=$(echo "$wisp_list" | python3 -c "
+import sys, json
+try:
+    items = json.load(sys.stdin)
+    for item in items:
+        kind = item.get('kind', '') or item.get('type', '')
+        if 'refinery' in kind.lower():
+            print('true')
+            sys.exit(0)
+    print('false')
+except:
+    print('false')
+" 2>/dev/null || echo "false")
+
+  echo "$has_refinery"
+  return 0
+}
