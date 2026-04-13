@@ -26,6 +26,9 @@ set -euo pipefail
 
 GSD_TOWN_ROOT="${GSD_TOWN_ROOT:-${HOME}/.gsd-town}"
 GSD_TOWN_RIG_DIR="${GSD_TOWN_ROOT}/gastown/mayor/rig"
+# Vendored gastown source — used for building gt from source
+# Prefer local vendor dir (submodule), fall back to remote clone
+GT_VENDOR_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)/vendor/gastown"
 GT_FORK_REPO="https://github.com/laulpogan/gastown"
 
 # ---------------------------------------------------------------------------
@@ -212,17 +215,28 @@ LINUX_INSTRUCTIONS
       echo "  [ERROR] go is required to build gt — skipping gt install" >&2
       all_ok=1
     else
-      echo "  [installing] gt (from source: ${GT_FORK_REPO})..."
-      local tmp_dir
-      tmp_dir=$(mktemp -d)
-      if git clone --depth=1 "${GT_FORK_REPO}" "${tmp_dir}/gastown" 2>&1 \
-          && (cd "${tmp_dir}/gastown" && make install 2>&1); then
-        echo "  [ok] gt installed"
+      echo "  [installing] gt from source..."
+      if [ -d "${GT_VENDOR_DIR}" ] && [ -f "${GT_VENDOR_DIR}/Makefile" ]; then
+        echo "  [installing] building from vendored submodule: ${GT_VENDOR_DIR}"
+        if (cd "${GT_VENDOR_DIR}" && make install 2>&1); then
+          echo "  [ok] gt installed (from vendor)"
+        else
+          echo "  [ERROR] failed to build gt from vendor" >&2
+          all_ok=1
+        fi
       else
-        echo "  [ERROR] failed to build gt from source" >&2
-        all_ok=1
+        echo "  [installing] vendored source not found, cloning ${GT_FORK_REPO}..."
+        local tmp_dir
+        tmp_dir=$(mktemp -d)
+        if git clone --depth=1 "${GT_FORK_REPO}" "${tmp_dir}/gastown" 2>&1 \
+            && (cd "${tmp_dir}/gastown" && make install 2>&1); then
+          echo "  [ok] gt installed (from clone)"
+        else
+          echo "  [ERROR] failed to build gt from source" >&2
+          all_ok=1
+        fi
+        rm -rf "${tmp_dir}"
       fi
-      rm -rf "${tmp_dir}"
     fi
   else
     echo "  [ok] gt present"
