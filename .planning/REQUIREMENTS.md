@@ -27,10 +27,10 @@
 
 ### Resilience
 
-- [ ] **RESIL-01**: Stall detection — GSD polls Witness status, surfaces dead polecats as failed plans
-- [ ] **RESIL-02**: Escalation routing — `gt escalate` from polecat surfaces to GSD verification
-- [ ] **RESIL-03**: Capacity-governed dispatch — respects `scheduler.max_polecats` config
-- [ ] **RESIL-04**: Seance integration — resumed polecats get prior session context
+- [x] **RESIL-01**: Stall detection — GSD polls Witness status, surfaces dead polecats as failed plans
+- [x] **RESIL-02**: Escalation routing — `gt escalate` from polecat surfaces to GSD verification
+- [x] **RESIL-03**: Capacity-governed dispatch — respects `scheduler.max_polecats` config
+- [x] **RESIL-04**: Seance integration — resumed polecats get prior session context
 
 ### Polish
 
@@ -69,10 +69,10 @@
 | AUTO-03 | Phase 3 | Complete |
 | AUTO-04 | Phase 3 | Complete |
 | AUTO-05 | Phase 3 | Complete |
-| RESIL-01 | Phase 4 | Pending |
-| RESIL-02 | Phase 4 | Pending |
-| RESIL-03 | Phase 4 | Pending |
-| RESIL-04 | Phase 4 | Pending |
+| RESIL-01 | Phase 4 | Complete |
+| RESIL-02 | Phase 4 | Complete |
+| RESIL-03 | Phase 4 | Complete |
+| RESIL-04 | Phase 4 | Complete |
 | POLISH-01 | Phase 5 | Pending |
 | POLISH-02 | Phase 5 | Pending |
 

@@ -15,7 +15,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [ ] **Phase 1: Fork + Critical Fixes** - Fork gastown and apply the two blocking bugs (gt done enforcement, convoy UUID)
 - [ ] **Phase 2: npm Package** - Ship GSD-Town as an installable npm package with skill registration and execute-phase hook
 - [x] **Phase 3: Auto-Setup** - Zero-config detection, dependency install, and town creation on first use (completed 2026-04-13)
-- [ ] **Phase 4: Resilience** - Stall detection, escalation routing, capacity governance, and session resume
+- [x] **Phase 4: Resilience** - Stall detection, escalation routing, capacity governance, and session resume (completed 2026-04-13)
 - [ ] **Phase 5: Polish** - README quickstart, architecture diagram, config reference, and example project
 
 ## Phase Details
@@ -76,7 +76,7 @@ Plans:
 **Plans**: 1 plan
 
 Plans:
-- [ ] 04-01-PLAN.md — Resilience enhancements to gastown.sh: stall detection, escalation routing, capacity governor, Seance context (RESIL-01, RESIL-02, RESIL-03, RESIL-04)
+- [x] 04-01-PLAN.md — Resilience enhancements to gastown.sh: stall detection, escalation routing, capacity governor, Seance context (RESIL-01, RESIL-02, RESIL-03, RESIL-04)
 
 ### Phase 5: Polish
 **Goal**: GSD-Town is fully documented and demonstrable so a new user can get from zero to running polecats in under 10 minutes
@@ -98,5 +98,5 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 | 1. Fork + Critical Fixes | 0/2 | Not started | - |
 | 2. npm Package | 0/2 | Not started | - |
 | 3. Auto-Setup | 2/2 | Complete   | 2026-04-13 |
-| 4. Resilience | 0/1 | Not started | - |
+| 4. Resilience | 1/1 | Complete   | 2026-04-13 |
 | 5. Polish | 0/TBD | Not started | - |

@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: verifying
-stopped_at: Completed 03-auto-setup-02-PLAN.md
-last_updated: "2026-04-13T21:07:06.646Z"
+stopped_at: Completed 04-resilience-01-PLAN.md
+last_updated: "2026-04-13T21:14:31.165Z"
 last_activity: 2026-04-13
 progress:
   total_phases: 5
-  completed_phases: 3
-  total_plans: 6
-  completed_plans: 6
+  completed_phases: 4
+  total_plans: 7
+  completed_plans: 7
   percent: 100
 ---
 
@@ -21,12 +21,12 @@ progress:
 See: .planning/PROJECT.md (updated 2026-04-13)
 
 **Core value:** Any GSD project gets multi-agent parallel execution with zero configuration
-**Current focus:** Phase 03 — Auto-Setup
+**Current focus:** Phase 04 — Resilience
 
 ## Current Position
 
-Phase: 4
-Plan: Not started
+Phase: 04 (Resilience) — EXECUTING
+Plan: 1 of 1
 Status: Phase complete — ready for verification
 Last activity: 2026-04-13
 
@@ -59,6 +59,7 @@ Progress: [░░░░░░░░░░] 0%
 | Phase 02-npm-package P02 | 2 | 2 tasks | 2 files |
 | Phase 03-auto-setup P01 | 2 | 3 tasks | 1 files |
 | Phase 03-auto-setup P02 | 2 | 2 tasks | 3 files |
+| Phase 04-resilience P01 | 35 | 3 tasks | 1 files |
 
 ## Accumulated Context
 
@@ -84,6 +85,9 @@ Recent decisions affecting current work:
 - [Phase 03-auto-setup]: runBash() sources both gastown.sh and auto-setup.sh per call — mirrors caller-sources-both convention from Plan 01
 - [Phase 03-auto-setup]: teardown preserves ~/.gsd-town by default; explicit --remove-data required for deletion (T-03-07)
 - [Phase 03-auto-setup]: workflow.use_gastown: auto already works in detect_gastown() — no code change needed, documented in HELP output
+- [Phase 04-resilience]: Escalation check before state case in polling loop — catches escalated beads regardless of Witness state
+- [Phase 04-resilience]: queue_or_dispatch wraps dispatch_plan_to_polecat with capacity check; callers prefer it over direct dispatch
+- [Phase 04-resilience]: format_plan_notes 9th arg is_resume defaults false — fully backward-compatible with existing callers
 
 ### Pending Todos
 
@@ -97,6 +101,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-04-13T21:06:40.595Z
-Stopped at: Completed 03-auto-setup-02-PLAN.md
+Last session: 2026-04-13T21:14:31.161Z
+Stopped at: Completed 04-resilience-01-PLAN.md
 Resume file: None
