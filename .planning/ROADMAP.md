@@ -73,7 +73,10 @@ Plans:
   2. A polecat that runs `gt escalate` causes GSD to surface the blockage to the user for resolution
   3. Dispatch respects `scheduler.max_polecats` — new polecats are queued, not spawned, when at capacity
   4. A resumed polecat receives prior session context via Seance and continues rather than starting over
-**Plans**: TBD
+**Plans**: 1 plan
+
+Plans:
+- [ ] 04-01-PLAN.md — Resilience enhancements to gastown.sh: stall detection, escalation routing, capacity governor, Seance context (RESIL-01, RESIL-02, RESIL-03, RESIL-04)
 
 ### Phase 5: Polish
 **Goal**: GSD-Town is fully documented and demonstrable so a new user can get from zero to running polecats in under 10 minutes
@@ -95,5 +98,5 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 | 1. Fork + Critical Fixes | 0/2 | Not started | - |
 | 2. npm Package | 0/2 | Not started | - |
 | 3. Auto-Setup | 2/2 | Complete   | 2026-04-13 |
-| 4. Resilience | 0/TBD | Not started | - |
+| 4. Resilience | 0/1 | Not started | - |
 | 5. Polish | 0/TBD | Not started | - |
