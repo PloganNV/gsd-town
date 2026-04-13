@@ -2,9 +2,32 @@
   "name": "gsd-town",
   "version": "0.1.0",
   "description": "Multi-agent parallel execution for GSD projects via Gas Town polecats",
-  "keywords": ["gsd", "gastown", "claude", "multi-agent", "ai"],
+  "keywords": [
+    "gsd",
+    "gastown",
+    "gas-town",
+    "claude",
+    "claude-code",
+    "multi-agent",
+    "ai",
+    "ai-agents",
+    "polecat",
+    "parallel-execution",
+    "orchestration"
+  ],
   "license": "MIT",
-  "engines": { "node": ">=18" },
+  "author": "Paul Logan",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/laulpogan/gsd-town.git"
+  },
+  "homepage": "https://github.com/laulpogan/gsd-town#readme",
+  "bugs": {
+    "url": "https://github.com/laulpogan/gsd-town/issues"
+  },
+  "engines": {
+    "node": ">=18"
+  },
   "bin": {
     "gsd-town": "./bin/gsd-town.js"
   },
@@ -15,6 +38,8 @@
   "files": [
     "bin/",
     "lib/",
-    "skills/"
+    "skills/",
+    "README.md",
+    "LICENSE"
   ]
 }

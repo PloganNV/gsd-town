@@ -1,0 +1,8 @@
+.planning/
+.git/
+.gitignore
+.npmignore
+CLAUDE.md
+examples/
+*.log
+.DS_Store
