@@ -358,6 +358,68 @@ dispatch_plan_to_polecat() {
   return 0
 }
 
+# seance_context_block()
+# Queries gt seance for prior session events on a bead and returns a formatted
+# markdown section instructing the polecat to recover prior context.
+# Returns empty string if no prior events exist (first dispatch).
+#
+# Args:
+#   $1 — bead_id (e.g., "gt-abc123")
+#
+# Outputs: markdown section string (may be empty) on stdout.
+seance_context_block() {
+  local bead_id="${1:?bead_id required}"
+
+  # gt seance queries the Seance daemon for prior events on this bead
+  # Returns JSON array of prior session events
+  local seance_output
+  seance_output=$(cd "$GT_TOWN_DIR" && \
+    PATH="$PATH:${HOME}/go/bin:/opt/homebrew/bin" \
+    "$(gt_cmd)" seance "$bead_id" --json 2>/dev/null || echo "[]")
+
+  local event_count
+  event_count=$(echo "$seance_output" | python3 -c "
+import sys, json
+try:
+    items = json.load(sys.stdin)
+    print(len(items))
+except:
+    print(0)
+" 2>/dev/null || echo "0")
+
+  if [ "$event_count" -eq 0 ]; then
+    echo ""
+    return 0
+  fi
+
+  # Return Seance context instructions for the polecat
+  # Use a sufficiently unique delimiter to avoid collisions with event content (T-04-03 mitigation)
+  cat <<GSD_SEANCE_BLOCK
+
+## Prior Session Context (Seance)
+
+This bead has ${event_count} prior session event(s). You are resuming interrupted work.
+
+**To recover prior context, run at session start:**
+\`\`\`bash
+source \$HOME/.claude/get-shit-done/bin/lib/gastown.sh
+gt seance ${bead_id} --json | python3 -c "
+import sys, json
+events = json.load(sys.stdin)
+for e in events[-5:]:  # Last 5 events
+    print(f'=== {e.get(\"timestamp\", \"\")} ===')
+    print(e.get('content', ''))
+    print()
+"
+\`\`\`
+
+**Resume guidance:**
+- Review prior events to understand what was completed before interruption
+- Continue from the last completed checkpoint, not from the beginning
+- Do NOT redo work already confirmed in prior events
+GSD_SEANCE_BLOCK
+}
+
 # format_plan_notes()
 # Formats GSD plan content into the bead notes markdown that polecats read at gt prime time.
 # The format is designed so a polecat can begin work from notes alone,
@@ -372,6 +434,8 @@ dispatch_plan_to_polecat() {
 #   $6 — task list (multiline; from plan's <tasks> section — task names and actions)
 #   $7 — convoy_id (optional; from create_phase_convoy())
 #   $8 — bead_id (optional; from create_plan_bead())
+#   $9 — is_resume (optional; "true" when re-dispatching a bead — appends Seance context block)
+#        Existing 8-arg callers unaffected: is_resume defaults to "false", no Seance block added.
 #
 # Outputs: formatted markdown string for use as bead --notes value
 format_plan_notes() {
@@ -383,10 +447,17 @@ format_plan_notes() {
   local task_list="${6:-}"
   local convoy_id="${7:-}"
   local bead_id="${8:-}"
+  local is_resume="${9:-false}"   # NEW: pass "true" when re-dispatching a bead
 
   # Derive project root from plan path
   local project_dir
   project_dir=$(python3 -c "import os; p='${plan_path}'; idx=p.find('/.planning/'); print(p[:idx] if idx >= 0 else os.path.dirname(p))" 2>/dev/null || echo "")
+
+  # Generate Seance context if this is a resume (RESIL-04)
+  local seance_section=""
+  if [ "$is_resume" = "true" ] && [ -n "$bead_id" ]; then
+    seance_section=$(seance_context_block "$bead_id")
+  fi
 
   cat <<NOTES
 # GSD Plan Context
@@ -432,6 +503,7 @@ Follow the execute-plan.md workflow from: \$HOME/.claude/get-shit-done/workflows
 
 Source GSD helpers: source \$HOME/.claude/get-shit-done/bin/lib/gastown.sh
 Registry (bead<->plan map): ${project_dir}/.planning/gastown.json
+${seance_section}
 NOTES
 }
 
