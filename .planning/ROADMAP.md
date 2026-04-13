@@ -98,7 +98,7 @@ Plans:
 **Plans**: 1 plan
 
 Plans:
-- [ ] 06-01-PLAN.md — Add launch_convoy() + poll_convoy_status() to gastown.sh; rewrite execute-phase.md dispatch (step 2.5) and polling (step 4) for convoy handoff (MAYOR-01, MAYOR-02, MAYOR-03)
+- [x] 06-01-PLAN.md — Add launch_convoy() + poll_convoy_status() to gastown.sh; rewrite execute-phase.md dispatch (step 2.5) and polling (step 4) for convoy handoff (MAYOR-01, MAYOR-02, MAYOR-03)
 
 #### Phase 7: Witness Integration
 **Goal**: Real-time stall and crash detection via Witness event subscription replaces the 30-second polling loop
@@ -165,7 +165,7 @@ Phases execute in numeric order: 6 → 7 → 8 → 9 → 10
 | 3. Auto-Setup | v1.0 | 2/2 | Complete | 2026-04-13 |
 | 4. Resilience | v1.0 | 1/1 | Complete | 2026-04-13 |
 | 5. Polish | v1.0 | 1/1 | Complete | 2026-04-13 |
-| 6. Mayor Delegation | v2.0 | 0/2 | Not started | - |
+| 6. Mayor Delegation | v2.0 | 1/1 | Complete   | 2026-04-13 |
 | 7. Witness Integration | v2.0 | 0/1 | Not started | - |
 | 8. Refinery Merging | v2.0 | 0/1 | Not started | - |
 | 9. Beads as Truth | v2.0 | 0/1 | Not started | - |

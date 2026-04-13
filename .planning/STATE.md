@@ -1,17 +1,17 @@
 ---
 gsd_state_version: 1.0
 milestone: v2.0
-milestone_name: gastown-drives
-status: ready-to-plan
-stopped_at: roadmap created — Phase 6 ready to plan
-last_updated: "2026-04-12T00:00:00.000Z"
-last_activity: 2026-04-12
+milestone_name: Gastown Drives
+status: verifying
+stopped_at: Completed 06-01-PLAN.md
+last_updated: "2026-04-13T22:52:31.881Z"
+last_activity: 2026-04-13
 progress:
   total_phases: 5
-  completed_phases: 0
-  total_plans: 6
-  completed_plans: 0
-  percent: 0
+  completed_phases: 1
+  total_plans: 1
+  completed_plans: 1
+  percent: 100
 ---
 
 # Project State
@@ -21,20 +21,21 @@ progress:
 See: .planning/PROJECT.md (updated 2026-04-13)
 
 **Core value:** GSD navigates, gastown drives
-**Current focus:** Phase 6 — Mayor Delegation
+**Current focus:** Phase 06 — Mayor Delegation
 
 ## Current Position
 
-Phase: 6 of 10 (Mayor Delegation)
-Plan: 0 of 2 in current phase
-Status: Ready to plan
-Last activity: 2026-04-12 — v2.0 roadmap created
+Phase: 06 (Mayor Delegation) — EXECUTING
+Plan: 1 of 1
+Status: Phase complete — ready for verification
+Last activity: 2026-04-13
 
 Progress: [░░░░░░░░░░] 0% (v2.0 phases)
 
 ## Performance Metrics
 
 **Velocity:**
+
 - Total plans completed (v2.0): 0
 - Average duration: —
 - Total execution time: —
@@ -46,6 +47,7 @@ Progress: [░░░░░░░░░░] 0% (v2.0 phases)
 | - | - | - | - |
 
 *Updated after each plan completion*
+| Phase 06 P01 | 1200 | 2 tasks | 2 files |
 
 ## Accumulated Context
 
@@ -56,6 +58,8 @@ Progress: [░░░░░░░░░░] 0% (v2.0 phases)
 - v2.0 shift: Mayor orchestrates dispatch, Witness monitors, Refinery merges, Beads persist state
 - GSD retains: planning (discuss/plan), verification (verifier), phase gating (ROADMAP)
 - Backward compat required: v1 CLI dispatch must remain as fallback throughout v2.0 build
+- [Phase 06]: Used convoy polling (gt convoy status --json) over push notifications for completion signal
+- [Phase 06]: GT_CONVOY_CAPABLE detection via gt convoy stage --help exit code — zero-cost on older gastown
 
 ### Blockers/Concerns
 
@@ -69,6 +73,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-04-12
-Stopped at: Roadmap written — ready to plan Phase 6
+Last session: 2026-04-13T22:52:31.878Z
+Stopped at: Completed 06-01-PLAN.md
 Resume file: None

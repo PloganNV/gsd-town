@@ -7,9 +7,9 @@
 
 ### Mayor Delegation
 
-- [ ] **MAYOR-01**: Mayor receives a convoy of beads and dispatches polecats autonomously
-- [ ] **MAYOR-02**: execute-phase.md delegates to Mayor via convoy handoff (replaces per-plan gt sling)
-- [ ] **MAYOR-03**: Mayor signals GSD orchestrator on convoy completion (replaces polling loop)
+- [x] **MAYOR-01**: Mayor receives a convoy of beads and dispatches polecats autonomously
+- [x] **MAYOR-02**: execute-phase.md delegates to Mayor via convoy handoff (replaces per-plan gt sling)
+- [x] **MAYOR-03**: Mayor signals GSD orchestrator on convoy completion (replaces polling loop)
 
 ### Witness Integration
 
@@ -51,9 +51,9 @@
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| MAYOR-01 | Phase 6 | Pending |
-| MAYOR-02 | Phase 6 | Pending |
-| MAYOR-03 | Phase 6 | Pending |
+| MAYOR-01 | Phase 6 | Complete |
+| MAYOR-02 | Phase 6 | Complete |
+| MAYOR-03 | Phase 6 | Complete |
 | WITNESS-01 | Phase 7 | Pending |
 | WITNESS-02 | Phase 7 | Pending |
 | REFINERY-01 | Phase 8 | Pending |
