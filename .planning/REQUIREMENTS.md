@@ -1,73 +1,65 @@
-# Requirements: GSD-Town v2.0 — Gastown Drives
+# Requirements: GSD-Town v3.0 — Long-Term Maintenance
 
-**Defined:** 2026-04-13
-**Core Value:** GSD navigates, gastown drives — each system does what it's best at
+**Defined:** 2026-04-14
+**Core Value:** Survive change — GSD updates, gastown drift, contributor PRs
 
-## v2.0 Requirements
+## v3.0 Requirements
 
-### Mayor Delegation
+### Patch Resilience
 
-- [x] **MAYOR-01**: Mayor receives a convoy of beads and dispatches polecats autonomously
-- [x] **MAYOR-02**: execute-phase.md delegates to Mayor via convoy handoff (replaces per-plan gt sling)
-- [x] **MAYOR-03**: Mayor signals GSD orchestrator on convoy completion (replaces polling loop)
+- [ ] **DOCTOR-01**: `gsd-town doctor` command checks if execute-phase.md patch is present
+- [ ] **DOCTOR-02**: `gsd-town doctor --fix` re-applies missing patches automatically
+- [ ] **DOCTOR-03**: `gsd-town status` shows patch health (integrated check)
 
-### Witness Integration
+### Continuous Integration
 
-- [ ] **WITNESS-01**: GSD subscribes to Witness events for real-time stall/crash detection
-- [ ] **WITNESS-02**: Witness-detected failures auto-record as GSD failed plans
+- [ ] **CI-01**: GitHub Actions workflow runs bash + CLI tests on every push and PR
+- [ ] **CI-02**: Workflow checks out gastown submodule (so bd path detection works)
+- [ ] **CI-03**: PRs get a test result comment before merge
 
-### Refinery Merging
+### API Contract
 
-- [ ] **REFINERY-01**: Polecat branches submit to Refinery merge queue (replaces GSD worktree merge)
-- [ ] **REFINERY-02**: GSD orchestrator waits for Refinery merge confirmation before verification
+- [ ] **DOCS-01**: CHANGELOG.md following Keep-a-Changelog format
+- [ ] **DOCS-02**: Semver policy documented — pre-1.0 minor can break, post-1.0 follows semver
+- [ ] **DOCS-03**: Public API list in README (functions safe to consume vs internal)
 
-### Beads as Truth
+### Gastown Drift Detection
 
-- [x] **BEADS-01**: Beads are source of truth for work status; STATE.md is a generated view
-- [x] **BEADS-02**: GSD verifier reads polecat results directly from beads (no SUMMARY.md round-trip)
-- [x] **BEADS-03**: Phase completion derived from convoy status (all beads closed = phase done)
-
-### Seance Continuity
-
-- [x] **SEANCE-01**: Polecats auto-query Seance on resume for prior session decisions/context
-- [x] **SEANCE-02**: Failed polecat re-dispatch includes full Seance history from predecessor
+- [ ] **DRIFT-01**: Integration test against pinned `vendor/gastown` version runs in CI
+- [ ] **DRIFT-02**: "Known good gastown version" documented in README
+- [ ] **DRIFT-03**: Submodule bump workflow — test against new upstream before merging
 
 ## Future Requirements
 
-- **FED-01**: Wasteland federation for cross-machine dispatch
-- **MULTI-01**: Multi-rig dispatch — route plans to specialized rigs by type
-- **DASH-01**: Convoy progress in GSD /gsd-progress output
+- **AUTO-01**: Automated npm publish on git tag push
+- **AUTO-02**: Conventional commits → automated changelog generation
 
 ## Out of Scope
 
 | Feature | Reason |
 |---------|--------|
-| Replace GSD planning | Mayor dispatches, GSD plans — roles are clear |
-| Replace GSD verification | GSD verifier is goal-backward; gastown has no equivalent |
-| Wasteland federation | v3 — single-town must be solid first |
-| GUI/dashboard | CLI-first; gastown dashboard exists for visual monitoring |
+| Full CI matrix (multiple OS/node versions) | Premature — ship macOS support first |
+| Codecov / coverage tracking | Bash coverage is messy; skip until it matters |
+| Pre-commit hooks | Contributors can opt in; don't enforce |
 
 ## Traceability
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| MAYOR-01 | Phase 6 | Complete |
-| MAYOR-02 | Phase 6 | Complete |
-| MAYOR-03 | Phase 6 | Complete |
-| WITNESS-01 | Phase 7 | Pending |
-| WITNESS-02 | Phase 7 | Pending |
-| REFINERY-01 | Phase 8 | Pending |
-| REFINERY-02 | Phase 8 | Pending |
-| BEADS-01 | Phase 9 | Complete |
-| BEADS-02 | Phase 9 | Complete |
-| BEADS-03 | Phase 9 | Complete |
-| SEANCE-01 | Phase 10 | Complete |
-| SEANCE-02 | Phase 10 | Complete |
+| DOCTOR-01 | Phase 1 | Pending |
+| DOCTOR-02 | Phase 1 | Pending |
+| DOCTOR-03 | Phase 1 | Pending |
+| CI-01 | Phase 2 | Pending |
+| CI-02 | Phase 2 | Pending |
+| CI-03 | Phase 2 | Pending |
+| DOCS-01 | Phase 3 | Pending |
+| DOCS-02 | Phase 3 | Pending |
+| DOCS-03 | Phase 3 | Pending |
+| DRIFT-01 | Phase 4 | Pending |
+| DRIFT-02 | Phase 4 | Pending |
+| DRIFT-03 | Phase 4 | Pending |
 
-**Coverage:**
-- v2.0 requirements: 12 total
-- Mapped to phases: 12
-- Unmapped: 0
+**Coverage:** 12 requirements mapped, 0 unmapped
 
 ---
-*Requirements defined: 2026-04-13*
+*Requirements defined: 2026-04-14*

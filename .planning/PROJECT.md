@@ -60,6 +60,16 @@ v2.0 — standalone product:
 - GUI/dashboard — CLI-first
 - Custom agent runtimes — gastown handles this
 
+## Current Milestone: v3.0 Long-Term Maintenance
+
+**Goal:** Harden gsd-town for sustained use — survive GSD updates, catch regressions in CI, document API contracts, and test against pinned gastown.
+
+**Target features:**
+- `gsd-town doctor` — detect and repair missing GSD patches (GSD updates wipe them)
+- GitHub Actions CI — run tests on every push/PR
+- CHANGELOG.md + semver policy — public API contract
+- Pinned gastown smoke test — catch upstream drift
+
 ## Context
 
 - Gastown vendored at vendor/gastown (submodule, laulpogan/gastown fork)

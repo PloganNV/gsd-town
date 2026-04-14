@@ -3,7 +3,8 @@
 ## Milestones
 
 - ✅ **v1.0 Prototype** - Phases 1-5 (shipped 2026-04-13)
-- 🚧 **v2.0 Gastown Drives** - Phases 6-10 (in progress)
+- ✅ **v2.0 Gastown Drives** - Phases 6-10 (shipped 2026-04-13)
+- 🚧 **v3.0 Long-Term Maintenance** - Phases 11-14 (in progress)
 
 ## Phases
 
@@ -170,3 +171,43 @@ Phases execute in numeric order: 6 → 7 → 8 → 9 → 10
 | 8. Refinery Merging | v2.0 | 0/1 | Not started | - |
 | 9. Beads as Truth | v2.0 | 0/1 | Not started | - |
 | 10. Seance Continuity | v2.0 | 1/0 | Complete    | 2026-04-13 |
+| 11. Patch Resilience (Doctor) | v3.0 | 0/1 | Not started | - |
+| 12. Continuous Integration | v3.0 | 0/1 | Not started | - |
+| 13. API Contract (Docs) | v3.0 | 0/1 | Not started | - |
+| 14. Gastown Drift Detection | v3.0 | 0/1 | Not started | - |
+
+### Phase 11: Patch Resilience (Doctor)
+**Goal**: `gsd-town doctor` command detects and repairs missing GSD workflow patches after `/gsd-update` wipes them
+**Depends on**: v2.0 complete
+**Requirements**: DOCTOR-01, DOCTOR-02, DOCTOR-03
+**Success Criteria**:
+  1. `gsd-town doctor` reports PASS/FAIL for each expected patch presence
+  2. `gsd-town doctor --fix` re-applies missing patches and reports what was changed
+  3. `gsd-town status` includes patch health in its default output
+
+### Phase 12: Continuous Integration
+**Goal**: Every push and PR runs the test suite automatically via GitHub Actions
+**Depends on**: Phase 11
+**Requirements**: CI-01, CI-02, CI-03
+**Success Criteria**:
+  1. `.github/workflows/test.yml` runs bash syntax, function definition, and CLI tests on push and PR
+  2. Workflow checks out gastown submodule so bd path detection works
+  3. PR page shows green check mark after tests pass
+
+### Phase 13: API Contract (Docs)
+**Goal**: Public API surface is documented with clear versioning policy
+**Depends on**: Phase 12
+**Requirements**: DOCS-01, DOCS-02, DOCS-03
+**Success Criteria**:
+  1. CHANGELOG.md exists at repo root following Keep-a-Changelog format
+  2. README documents semver policy (pre-1.0 minor = breaking OK, post-1.0 = strict)
+  3. README lists public vs internal functions in lib/
+
+### Phase 14: Gastown Drift Detection
+**Goal**: Integration smoke test runs against pinned vendor/gastown to catch upstream API changes
+**Depends on**: Phase 12 (needs CI)
+**Requirements**: DRIFT-01, DRIFT-02, DRIFT-03
+**Success Criteria**:
+  1. A smoke test in CI boots gastown from vendor/ and runs detection + dispatch integration tests
+  2. README documents the known-good gastown commit SHA
+  3. A script exists to bump the submodule and run drift tests before merging the update
