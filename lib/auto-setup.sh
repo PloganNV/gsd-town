@@ -166,7 +166,7 @@ Please install dependencies manually:
   go:   https://go.dev/doc/install
   dolt: curl -L https://github.com/dolthub/dolt/releases/latest/download/install.sh | sudo bash
   tmux: sudo apt-get install -y tmux  (or equivalent for your distro)
-  bd:   go install github.com/gastownhall/beads/cmd/bd@latest
+  bd:   CGO_CFLAGS="-I$(icu-config --prefix)/include" CGO_CXXFLAGS="-I$(icu-config --prefix)/include -std=c++17" CGO_LDFLAGS="-L$(icu-config --prefix)/lib" go install github.com/steveyegge/beads/cmd/bd@latest
   gt:   git clone https://github.com/laulpogan/gastown && cd gastown && make install
 LINUX_INSTRUCTIONS
     return 1
@@ -195,14 +195,22 @@ LINUX_INSTRUCTIONS
     "command -v tmux" \
     "brew install tmux" || all_ok=1
 
-  # 4. bd (beads) — go-installed, not in brew; requires go to be present
+  # 4. bd (beads) — go-installed, not in brew; requires go + icu4c (for go-icu-regex CGO)
   if ! command -v go >/dev/null 2>&1; then
     echo "  [ERROR] go is required to install bd — skipping bd install" >&2
     all_ok=1
   else
-    _ensure_dep "bd" \
-      "command -v bd >/dev/null 2>&1 || [ -x \"${HOME}/go/bin/bd\" ]" \
-      "go install github.com/gastownhall/beads/cmd/bd@latest" || all_ok=1
+    # bd depends on dolthub/go-icu-regex which needs ICU4C headers for CGO
+    local icu_prefix
+    icu_prefix="$(brew --prefix icu4c 2>/dev/null || echo "")"
+    if [ -z "${icu_prefix}" ] || [ ! -d "${icu_prefix}/include" ]; then
+      echo "  [ERROR] icu4c not found — install with: brew install icu4c" >&2
+      all_ok=1
+    else
+      _ensure_dep "bd" \
+        "command -v bd >/dev/null 2>&1 || [ -x \"${HOME}/go/bin/bd\" ]" \
+        "CGO_CFLAGS=\"-I${icu_prefix}/include\" CGO_CXXFLAGS=\"-I${icu_prefix}/include -std=c++17\" CGO_LDFLAGS=\"-L${icu_prefix}/lib\" GOBIN=\"${HOME}/go/bin\" go install github.com/steveyegge/beads/cmd/bd@latest" || all_ok=1
+    fi
   fi
 
   # 5. gt — source-built from gastown fork; must be last (requires go)
