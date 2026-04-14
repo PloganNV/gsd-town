@@ -4,5 +4,7 @@
 .npmignore
 CLAUDE.md
 examples/
+test/
+vendor/
 *.log
 .DS_Store

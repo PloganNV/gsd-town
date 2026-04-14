@@ -32,6 +32,9 @@
     "gsd-town": "./bin/gsd-town.js"
   },
   "scripts": {
+    "test": "bash test/run.sh",
+    "test:bash": "bash test/bash/01-syntax.sh && bash test/bash/02-functions-defined.sh",
+    "test:cli": "node --test test/cli/*.test.js",
     "postinstall": "node ./bin/postinstall.js",
     "preuninstall": "node ./bin/postinstall.js --uninstall"
   },
