@@ -19,9 +19,9 @@
 
 ### API Contract
 
-- [ ] **DOCS-01**: CHANGELOG.md following Keep-a-Changelog format
-- [ ] **DOCS-02**: Semver policy documented — pre-1.0 minor can break, post-1.0 follows semver
-- [ ] **DOCS-03**: Public API list in README (functions safe to consume vs internal)
+- [x] **DOCS-01**: CHANGELOG.md following Keep-a-Changelog format
+- [x] **DOCS-02**: Semver policy documented — pre-1.0 minor can break, post-1.0 follows semver
+- [x] **DOCS-03**: Public API list in README (functions safe to consume vs internal)
 
 ### Gastown Drift Detection
 
@@ -52,9 +52,9 @@
 | CI-01 | Phase 2 | Complete |
 | CI-02 | Phase 2 | Complete |
 | CI-03 | Phase 2 | Complete |
-| DOCS-01 | Phase 3 | Pending |
-| DOCS-02 | Phase 3 | Pending |
-| DOCS-03 | Phase 3 | Pending |
+| DOCS-01 | Phase 13 | Complete |
+| DOCS-02 | Phase 13 | Complete |
+| DOCS-03 | Phase 13 | Complete |
 | DRIFT-01 | Phase 4 | Pending |
 | DRIFT-02 | Phase 4 | Pending |
 | DRIFT-03 | Phase 4 | Pending |
