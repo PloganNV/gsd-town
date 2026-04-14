@@ -28,3 +28,36 @@ jobs:
         run: npm test
         # GSD_TOWN_INTEGRATION is intentionally NOT set — integration tests
         # require a live gastown daemon and are skipped in CI by default.
+
+  build-gastown-drift:
+    name: Gastown API surface drift check
+    runs-on: ubuntu-latest
+    # Advisory: drift detection tells us when upstream breaks our contract.
+    # Does not block merges — a blocking failure is caught by the test job above.
+    continue-on-error: true
+
+    steps:
+      - name: Checkout (with submodules)
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: vendor/gastown/go.mod
+          cache-dependency-path: vendor/gastown/go.sum
+
+      - name: Build gt from vendor/gastown
+        working-directory: vendor/gastown
+        run: |
+          # make build (not make install) — avoids daemon-restart and plugin-sync steps
+          # that require a running town. SKIP_UPDATE_CHECK skips the upstream-fetch check
+          # (submodule checkouts are detached HEAD; the check exits 0 on detached HEAD,
+          # but setting explicitly is self-documenting).
+          SKIP_UPDATE_CHECK=1 make build
+
+      - name: Run API surface drift check
+        env:
+          GT_BIN: ${{ github.workspace }}/vendor/gastown/gt
+        run: bash test/drift/01-api-surface.sh
