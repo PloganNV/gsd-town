@@ -143,6 +143,40 @@ GSD-Town manages its own Gas Town workspace at `~/.gsd-town/` (separate from any
 
 Subsequent dispatches reuse the existing town. The daemon stays running between sessions.
 
+## Gastown Compatibility
+
+GSD-Town vendors gastown as a git submodule (`vendor/gastown`). The pinned commit is the
+known-good baseline tested against GSD-Town's dispatch API.
+
+**Known-good commit:** `63bf531f285159edfe207dcedab1962d93a357b6`
+
+CI runs a drift check on every push that builds gt from the pinned submodule and verifies
+all commands and flags GSD-Town depends on are still present (`gt sling --no-convoy --no-merge`,
+`gt convoy stage --launch --json`, `gt polecat list --json`, `gt done`, `gt daemon status`).
+
+### Bumping the gastown submodule
+
+Use `scripts/bump-gastown.sh` to upgrade safely:
+
+```bash
+# Bump to a specific commit
+bash scripts/bump-gastown.sh <new-commit-sha>
+
+# Bump to the tip of a branch
+bash scripts/bump-gastown.sh origin/main
+```
+
+The script updates the submodule, builds gt, runs the drift check locally, and prints a
+diff of the help output so you can spot behavior changes before committing.
+
+**Manual workflow (if you prefer):**
+```bash
+cd vendor/gastown && git fetch && git checkout <new-commit>
+cd ../..
+bash test/drift/01-api-surface.sh   # verify API surface locally
+git add vendor/gastown && git commit -m "chore: bump gastown to <new-commit>"
+```
+
 ## Gastown Fork
 
 GSD-Town includes critical bug fixes contributed upstream:
