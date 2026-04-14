@@ -1,5 +1,7 @@
 # GSD-Town
 
+[![Tests](https://github.com/laulpogan/gsd-town/actions/workflows/test.yml/badge.svg?branch=main)](https://github.com/laulpogan/gsd-town/actions/workflows/test.yml)
+
 **Multi-agent parallel execution for GSD via Gas Town**
 
 GSD-Town is a portable plugin that adds multi-agent execution to any [GSD](https://github.com/get-shit-done) project via [Gas Town](https://github.com/gastownhall/gastown). It spins up and manages its own town workspace — no pre-existing gastown installation required. Run `/gsd-execute-phase` and it automatically dispatches polecats (worker agents) instead of single-agent execution.
