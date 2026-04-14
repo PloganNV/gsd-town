@@ -172,7 +172,7 @@ Phases execute in numeric order: 6 → 7 → 8 → 9 → 10
 | 9. Beads as Truth | v2.0 | 0/1 | Not started | - |
 | 10. Seance Continuity | v2.0 | 1/0 | Complete    | 2026-04-13 |
 | 11. Patch Resilience (Doctor) | v3.0 | 0/1 | Not started | - |
-| 12. Continuous Integration | v3.0 | 0/1 | Not started | - |
+| 12. Continuous Integration | v3.0 | 1/1 | Complete   | 2026-04-14 |
 | 13. API Contract (Docs) | v3.0 | 0/1 | Not started | - |
 | 14. Gastown Drift Detection | v3.0 | 0/1 | Not started | - |
 

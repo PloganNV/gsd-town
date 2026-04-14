@@ -1,17 +1,17 @@
 ---
 gsd_state_version: 1.0
 milestone: v3.0
-milestone_name: long-term-maintenance
-status: ready-to-plan
-stopped_at: v3.0 milestone started
-last_updated: "2026-04-14T00:00:00.000Z"
-last_activity: 2026-04-14
+milestone_name: Long-Term Maintenance
+status: planning
+stopped_at: Completed 12-01-PLAN.md (GitHub Actions CI)
+last_updated: "2026-04-14T18:10:56.308Z"
+last_activity: 2026-04-14 — v3.0 milestone started
 progress:
-  total_phases: 4
-  completed_phases: 0
-  total_plans: 0
-  completed_plans: 0
-  percent: 0
+  total_phases: 9
+  completed_phases: 2
+  total_plans: 3
+  completed_plans: 2
+  percent: 67
 ---
 
 # Project State
@@ -37,6 +37,8 @@ Last activity: 2026-04-14 — v3.0 milestone started
 - v3.0 focus: long-term survival — GSD updates, upstream drift, contributor regressions
 - 4 phases mapped to 4 risk areas identified in maintenance analysis
 - Phases 11 (Doctor), 12 (CI), 13 (Docs), 14 (Drift) continue v2's numbering
+- [Phase 12]: ubuntu-latest for CI: bash and python3 available by default, no extra apt installs needed
+- [Phase 12]: npm install --ignore-scripts in CI: postinstall patches execute-phase.md which does not exist in CI
 
 ### Blockers/Concerns
 
@@ -46,5 +48,5 @@ Last activity: 2026-04-14 — v3.0 milestone started
 
 ## Session Continuity
 
-Last session: 2026-04-14
-Stopped at: Milestone started, ready to plan Phase 11
+Last session: 2026-04-14T18:10:56.304Z
+Stopped at: Completed 12-01-PLAN.md (GitHub Actions CI)

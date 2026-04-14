@@ -13,9 +13,9 @@
 
 ### Continuous Integration
 
-- [ ] **CI-01**: GitHub Actions workflow runs bash + CLI tests on every push and PR
-- [ ] **CI-02**: Workflow checks out gastown submodule (so bd path detection works)
-- [ ] **CI-03**: PRs get a test result comment before merge
+- [x] **CI-01**: GitHub Actions workflow runs bash + CLI tests on every push and PR
+- [x] **CI-02**: Workflow checks out gastown submodule (so bd path detection works)
+- [x] **CI-03**: PRs get a test result comment before merge
 
 ### API Contract
 
@@ -49,9 +49,9 @@
 | DOCTOR-01 | Phase 11 | Complete |
 | DOCTOR-02 | Phase 11 | Complete |
 | DOCTOR-03 | Phase 11 | Complete |
-| CI-01 | Phase 2 | Pending |
-| CI-02 | Phase 2 | Pending |
-| CI-03 | Phase 2 | Pending |
+| CI-01 | Phase 2 | Complete |
+| CI-02 | Phase 2 | Complete |
+| CI-03 | Phase 2 | Complete |
 | DOCS-01 | Phase 3 | Pending |
 | DOCS-02 | Phase 3 | Pending |
 | DOCS-03 | Phase 3 | Pending |
