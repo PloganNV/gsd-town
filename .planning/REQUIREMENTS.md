@@ -7,9 +7,9 @@
 
 ### Patch Resilience
 
-- [ ] **DOCTOR-01**: `gsd-town doctor` command checks if execute-phase.md patch is present
-- [ ] **DOCTOR-02**: `gsd-town doctor --fix` re-applies missing patches automatically
-- [ ] **DOCTOR-03**: `gsd-town status` shows patch health (integrated check)
+- [x] **DOCTOR-01**: `gsd-town doctor` command checks if execute-phase.md patch is present
+- [x] **DOCTOR-02**: `gsd-town doctor --fix` re-applies missing patches automatically
+- [x] **DOCTOR-03**: `gsd-town status` shows patch health (integrated check)
 
 ### Continuous Integration
 
@@ -46,9 +46,9 @@
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| DOCTOR-01 | Phase 1 | Pending |
-| DOCTOR-02 | Phase 1 | Pending |
-| DOCTOR-03 | Phase 1 | Pending |
+| DOCTOR-01 | Phase 11 | Complete |
+| DOCTOR-02 | Phase 11 | Complete |
+| DOCTOR-03 | Phase 11 | Complete |
 | CI-01 | Phase 2 | Pending |
 | CI-02 | Phase 2 | Pending |
 | CI-03 | Phase 2 | Pending |
