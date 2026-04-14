@@ -61,3 +61,24 @@ test('status exits 0 or 1 (never crashes)', () => {
   // What matters is we don't crash with some other exit code
   assert.ok(code === 0 || code === 1, `unexpected exit code: ${code}`);
 });
+
+test('doctor exits 0 or 1 (never crashes)', () => {
+  const { code } = run('doctor');
+  assert.ok(code === 0 || code === 1, `unexpected exit code: ${code}`);
+});
+
+test('doctor reports PASS or FAIL for each check', () => {
+  const { stdout } = run('doctor');
+  // Must have at least one [PASS] or [FAIL] line
+  assert.match(stdout, /\[(PASS|FAIL)\]/);
+});
+
+test('doctor --fix exits 0', () => {
+  const { code } = run('doctor --fix');
+  assert.equal(code, 0);
+});
+
+test('doctor listed in help', () => {
+  const { stdout } = run('help');
+  assert.match(stdout, /doctor/);
+});
