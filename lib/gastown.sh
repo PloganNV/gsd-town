@@ -8,8 +8,15 @@ set -euo pipefail
 
 GT_BIN="${HOME}/.local/bin/gt"
 BD_BIN="${HOME}/go/bin/bd"
-GT_TOWN_DIR="${HOME}/gt"
-GT_RIG_DIR="${HOME}/gt/gastown/mayor/rig"
+# Prefer GSD-Town managed location, fall back to legacy ~/gt
+if [ -d "${HOME}/.gsd-town/gastown" ]; then
+  GT_TOWN_DIR="${HOME}/.gsd-town"
+elif [ -d "${HOME}/gt/gastown" ]; then
+  GT_TOWN_DIR="${HOME}/gt"
+else
+  GT_TOWN_DIR="${HOME}/.gsd-town"
+fi
+GT_RIG_DIR="${GT_TOWN_DIR}/gastown/mayor/rig"
 
 # HOOK SYNC SAFETY
 # gt hooks sync writes ONLY .claude/settings.json via the hooks package.
