@@ -24,6 +24,23 @@ if ! node --test test/cli/*.test.js 2>&1; then
   FAIL=$((FAIL + 1))
 fi
 
+# Integration tests — only run if GSD_TOWN_INTEGRATION=1 (requires live daemon)
+if [ "${GSD_TOWN_INTEGRATION:-0}" = "1" ]; then
+  echo ""
+  echo "=== integration tests ==="
+  for test_file in test/integration/*.sh; do
+    echo ""
+    echo "--- $test_file ---"
+    if ! bash "$test_file"; then
+      FAIL=$((FAIL + 1))
+    fi
+  done
+else
+  echo ""
+  echo "=== integration tests ==="
+  echo "  skipped (set GSD_TOWN_INTEGRATION=1 to run against live daemon)"
+fi
+
 echo ""
 if [ $FAIL -eq 0 ]; then
   echo "✓ all tests passed"
