@@ -73,9 +73,11 @@ test('doctor reports PASS or FAIL for each check', () => {
   assert.match(stdout, /\[(PASS|FAIL)\]/);
 });
 
-test('doctor --fix exits 0', () => {
+test('doctor --fix never crashes', () => {
   const { code } = run('doctor --fix');
-  assert.equal(code, 0);
+  // Exit 0 (fixed or already healthy) or 1 (fix failed — e.g. GSD not installed)
+  // are both valid. Any other exit code means the CLI crashed.
+  assert.ok(code === 0 || code === 1, `unexpected exit code: ${code}`);
 });
 
 test('doctor listed in help', () => {
